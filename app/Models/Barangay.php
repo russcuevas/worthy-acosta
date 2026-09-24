@@ -30,4 +30,13 @@ class Barangay extends Model
     {
         return $this->hasMany(ElectoralRecord::class, 'barangay_id', 'id');
     }
+
+    /**
+     * Get assistance records for this barangay.
+     */
+    public function assistances()
+    {
+        return $this->hasMany(Assistance::class, 'barangay_id', 'id');
+    }
 }
+

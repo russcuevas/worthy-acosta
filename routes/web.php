@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ElectoralDataController as AdminElectoralDataController;
+use App\Http\Controllers\Admin\AssistanceController as AdminAssistanceController;
 use App\Http\Controllers\Assistant\DashboardController as AssistantDashboardController;
 
 // Authentication routes
@@ -20,6 +21,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
         return redirect()->route('admin.electoral');
     });
+    
+    // Electoral Data
     Route::get('/electoral', [AdminElectoralDataController::class, 'index'])->name('electoral');
     Route::get('/electoral/data', [AdminElectoralDataController::class, 'getData'])->name('electoral.data');
     Route::get('/electoral/years', [AdminElectoralDataController::class, 'getYears'])->name('electoral.years');
@@ -30,6 +33,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/electoral/save-data', [AdminElectoralDataController::class, 'saveData'])->name('electoral.save_data');
     Route::get('/electoral/geojson', [AdminElectoralDataController::class, 'getBarangays'])->name('electoral.geojson');
     Route::post('/electoral/save-geojson', [AdminElectoralDataController::class, 'saveGeojson'])->name('electoral.save_geojson');
+
+    // Assistance Module
+    Route::prefix('assistance')->name('assistance.')->group(function () {
+        Route::get('/', [AdminAssistanceController::class, 'index'])->name('index');
+        Route::get('/data', [AdminAssistanceController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminAssistanceController::class, 'store'])->name('store');
+        Route::get('/record/{id}', [AdminAssistanceController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminAssistanceController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [AdminAssistanceController::class, 'destroy'])->name('delete');
+        Route::get('/export', [AdminAssistanceController::class, 'exportCsv'])->name('export');
+    });
 });
 
 // Assistant routes
@@ -41,4 +55,15 @@ Route::prefix('assistant')->name('assistant.')->group(function () {
         return redirect()->route('assistant.electoral');
     });
     Route::get('/electoral', [AdminElectoralDataController::class, 'index'])->name('electoral');
+
+    // Assistance Module
+    Route::prefix('assistance')->name('assistance.')->group(function () {
+        Route::get('/', [AdminAssistanceController::class, 'index'])->name('index');
+        Route::get('/data', [AdminAssistanceController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminAssistanceController::class, 'store'])->name('store');
+        Route::get('/record/{id}', [AdminAssistanceController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminAssistanceController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [AdminAssistanceController::class, 'destroy'])->name('delete');
+        Route::get('/export', [AdminAssistanceController::class, 'exportCsv'])->name('export');
+    });
 });

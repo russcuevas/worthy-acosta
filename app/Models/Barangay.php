@@ -12,14 +12,12 @@ class Barangay extends Model
     protected $fillable = [
         'name',
         'slug',
-        'base_voters',
         'pin_x',
         'pin_y',
         'is_active',
     ];
 
     protected $casts = [
-        'base_voters' => 'integer',
         'pin_x' => 'float',
         'pin_y' => 'float',
         'is_active' => 'boolean',

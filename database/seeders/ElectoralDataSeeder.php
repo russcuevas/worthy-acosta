@@ -150,10 +150,6 @@ class ElectoralDataSeeder extends Seeder
             ]
         ];
 
-        // First, check if JSON file exists in storage/app/electoral_data.json
-        $jsonPath = storage_path('app/electoral_data.json');
-        $cachedJson = file_exists($jsonPath) ? json_decode(file_get_contents($jsonPath), true) : null;
-
         foreach ($candidatesByYear as $year => $positionsMap) {
             $positions = array_keys($positionsMap);
             
@@ -169,77 +165,18 @@ class ElectoralDataSeeder extends Seeder
             foreach ($positions as $position) {
                 $candidatesTemplate = $positionsMap[$position];
 
+                // Prepare clean candidate list with 0 votes
+                $cleanCandidates = array_map(function ($c) {
+                    return [
+                        'name' => $c['name'],
+                        'color' => $c['color'] ?? '#075998',
+                        'votes' => 0
+                    ];
+                }, $candidatesTemplate);
+
                 foreach ($barangays as $barangay) {
                     $bgyId = $barangay->id;
                     $bgyName = $barangay->name;
-
-                    if ($cachedJson && isset($cachedJson[$year][$position][$bgyId])) {
-                        $rec = $cachedJson[$year][$position][$bgyId];
-                        ElectoralRecord::updateOrCreate(
-                            [
-                                'year' => $year,
-                                'position' => $position,
-                                'barangay_id' => $bgyId,
-                            ],
-                            [
-                                'barangay_name' => $rec['barangay_name'] ?? $bgyName,
-                                'registered_voters' => $rec['registered_voters'] ?? $barangay->base_voters ?? 5000,
-                                'actual_votes' => $rec['actual_votes'] ?? 4200,
-                                'turnout_percentage' => $rec['turnout_percentage'] ?? 84.0,
-                                'winner_name' => $rec['winner_name'] ?? 'Candidate',
-                                'winner_color' => $rec['winner_color'] ?? '#075998',
-                                'winner_votes' => $rec['winner_votes'] ?? 0,
-                                'candidates_data' => $rec['candidates'] ?? [],
-                            ]
-                        );
-                        continue;
-                    }
-
-                    // Fallback generated algorithm
-                    $yearFactor = match($year) {
-                        '2013' => 0.75,
-                        '2016' => 0.82,
-                        '2019' => 0.89,
-                        '2022' => 0.95,
-                        '2023' => 0.97,
-                        '2025' => 1.05,
-                        default => 1.0,
-                    };
-
-                    $regVoters = (int)round(($barangay->base_voters ?? 5000) * $yearFactor);
-                    $turnoutRate = 0.80 + (($bgyId * 7 + (int)$year) % 15) / 100;
-                    $actualVotes = (int)round($regVoters * $turnoutRate);
-
-                    $candidateCount = count($candidatesTemplate);
-                    $favoredIdx = ($bgyId + (int)substr($year, 2) + strlen($position)) % $candidateCount;
-
-                    $shares = [];
-                    $totalWeight = 0;
-                    for ($c = 0; $c < $candidateCount; $c++) {
-                        $weight = ($c === $favoredIdx) ? 1.8 + ($bgyId % 3) * 0.3 : 1.0 + (($c * 3) % 4) * 0.2;
-                        $shares[$c] = $weight;
-                        $totalWeight += $weight;
-                    }
-
-                    $currentAssigned = 0;
-                    $candidatesData = [];
-                    for ($c = 0; $c < $candidateCount; $c++) {
-                        $cVotes = ($c === $candidateCount - 1)
-                            ? ($actualVotes - $currentAssigned)
-                            : (int)round($actualVotes * ($shares[$c] / $totalWeight));
-
-                        $currentAssigned += $cVotes;
-
-                        $candidatesData[] = [
-                            'name' => $candidatesTemplate[$c]['name'],
-                            'color' => $candidatesTemplate[$c]['color'],
-                            'votes' => max(0, $cVotes)
-                        ];
-                    }
-
-                    $sorted = $candidatesData;
-                    usort($sorted, function($a, $b) { return $b['votes'] - $a['votes']; });
-                    $winner = $sorted[0] ?? ['name' => 'None', 'color' => '#075998', 'votes' => 0];
 
                     ElectoralRecord::updateOrCreate(
                         [
@@ -249,13 +186,13 @@ class ElectoralDataSeeder extends Seeder
                         ],
                         [
                             'barangay_name' => $bgyName,
-                            'registered_voters' => $regVoters,
-                            'actual_votes' => $actualVotes,
-                            'turnout_percentage' => round(($actualVotes / $regVoters) * 100, 1),
-                            'winner_name' => $winner['name'],
-                            'winner_color' => $winner['color'],
-                            'winner_votes' => $winner['votes'],
-                            'candidates_data' => $candidatesData,
+                            'registered_voters' => 0,
+                            'actual_votes' => 0,
+                            'turnout_percentage' => 0.00,
+                            'winner_name' => 'None',
+                            'winner_color' => '#64748B',
+                            'winner_votes' => 0,
+                            'candidates_data' => $cleanCandidates,
                         ]
                     );
                 }

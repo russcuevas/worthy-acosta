@@ -121,6 +121,57 @@
             transform: translateY(-1px);
         }
 
+        .btn-edit-year-pill {
+            background: #F8FAFC;
+            border: 1.5px solid #CBD5E1;
+            color: var(--color-deep-navy);
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-edit-year-pill:hover {
+            background: #E2E8F0;
+            border-color: #94A3B8;
+            color: var(--color-primary-blue);
+            transform: translateY(-1px);
+        }
+
+        .btn-delete-year-pill {
+            background: #FEF2F2;
+            border: 1.5px solid #FECACA;
+            color: #DC2626;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-delete-year-pill:hover {
+            background: #FEE2E2;
+            border-color: #F87171;
+            color: #B91C1C;
+            transform: translateY(-1px);
+        }
+
+        .year-actions-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
         .db-status-badge {
             display: inline-flex;
             align-items: center;
@@ -1023,15 +1074,40 @@
                     @endforeach
                 </div>
 
-                <!-- Add Future / Custom Year Button -->
-                <button type="button" class="btn-add-year-pill" id="btnOpenAddYearModal"
-                    title="Add Future / Custom Election Year">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24"
-                        stroke-width="2.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                    <span>Add Year</span>
-                </button>
+                <!-- Year Actions Group (Edit, Delete, Add) -->
+                <div class="year-actions-wrap">
+                    <!-- Edit Active Year & Positions -->
+                    <button type="button" class="btn-edit-year-pill" id="btnOpenEditYearModal"
+                        title="Edit Positions to include in this Election Year">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24"
+                            stroke-width="2.2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                        </svg>
+                        <span>Edit Year</span>
+                    </button>
+
+                    <!-- Delete Active Year -->
+                    <button type="button" class="btn-delete-year-pill" id="btnOpenDeleteYearModal"
+                        title="Delete this Election Year and all its records">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24"
+                            stroke-width="2.2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                        <span>Delete Year</span>
+                    </button>
+
+                    <!-- Add Future / Custom Year Button -->
+                    <button type="button" class="btn-add-year-pill" id="btnOpenAddYearModal"
+                        title="Add Future / Custom Election Year">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24"
+                            stroke-width="2.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <span>Add Year</span>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -1249,6 +1325,88 @@
                         Open</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- 4B. MODAL: Edit Active Election Year & Included Positions -->
+    <div class="modal-backdrop-custom" id="editYearModalBackdrop">
+        <div class="modal-card-custom" style="max-width: 540px;">
+            <div class="modal-header-custom">
+                <h2>Edit Election Year (<span id="editYearDisplayLabel">2025</span>)</h2>
+                <button type="button" class="modal-close-btn" id="btnCloseEditYearModal">&times;</button>
+            </div>
+
+            <form id="editYearForm">
+                @csrf
+                <input type="hidden" id="inputEditYearVal" name="year" value="">
+                <div class="modal-body-custom">
+                    <div class="form-group-custom">
+                        <label for="inputEditYearTitle">Election Title / Description</label>
+                        <input type="text" id="inputEditYearTitle" name="title" class="form-control-custom"
+                            placeholder="e.g. 2025 Local & National Elections" required>
+                    </div>
+
+                    <div class="form-group-custom">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <label style="margin:0;">Electoral Positions to Include</label>
+                            <span style="font-size:0.72rem; color:var(--text-muted);">Check/uncheck positions</span>
+                        </div>
+
+                        <div class="positions-checklist-grid" id="editPositionsChecklist">
+                            <!-- Injected dynamically based on year's configuration -->
+                        </div>
+
+                        <!-- Add custom position field -->
+                        <div style="margin-top: 10px; display: flex; gap: 8px;">
+                            <input type="text" id="inputAddCustomPos" class="form-control-custom" style="font-size:0.84rem; padding:8px 12px;"
+                                placeholder="Add custom position (e.g. SK Chairman)">
+                            <button type="button" class="btn-modal-cancel" id="btnAddCustomPos"
+                                style="padding:8px 14px; white-space:nowrap; font-weight:800; color:var(--color-primary-blue); background:#EFF6FF; border-color:#BFDBFE;">
+                                + Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-modal-cancel" id="btnCancelEditYearModal">Cancel</button>
+                    <button type="submit" class="btn-modal-save" id="btnSubmitEditYear">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4C. MODAL: Delete Election Year Confirmation -->
+    <div class="modal-backdrop-custom" id="deleteYearModalBackdrop">
+        <div class="modal-card-custom" style="max-width: 440px;">
+            <div class="modal-header-custom" style="border-bottom-color: #FEE2E2;">
+                <h2 style="color: #DC2626; display:flex; align-items:center; gap:8px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24"
+                        stroke-width="2" stroke="#DC2626">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                    </svg>
+                    Delete Election Year
+                </h2>
+                <button type="button" class="modal-close-btn" id="btnCloseDeleteYearModal">&times;</button>
+            </div>
+
+            <div class="modal-body-custom">
+                <p style="font-size: 0.92rem; color: var(--color-deep-navy); margin-bottom: 12px; line-height: 1.5;">
+                    Are you sure you want to permanently delete Election Year <strong id="deleteYearDisplayLabel" style="color: #DC2626;">2025</strong>?
+                </p>
+                <div style="font-size: 0.80rem; color: #991B1B; line-height: 1.4; background: #FEF2F2; padding: 10px 14px; border-radius: 8px; border: 1px solid #FECACA;">
+                    ⚠️ <strong>Warning:</strong> All electoral records, barangay totals, and candidate vote counts associated with this election year will be permanently deleted from the database.
+                </div>
+            </div>
+
+            <div class="modal-footer-custom">
+                <button type="button" class="btn-modal-cancel" id="btnCancelDeleteYearModal">Cancel</button>
+                <button type="button" class="btn-modal-save" id="btnConfirmDeleteYear"
+                    style="background: linear-gradient(135deg, #DC2626, #B91C1C); border: none; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);">
+                    Yes, Delete Year
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1474,6 +1632,27 @@
             const addYearForm = document.getElementById('addYearForm');
             const inputNewYear = document.getElementById('inputNewYear');
             const inputNewYearTitle = document.getElementById('inputNewYearTitle');
+
+            // Edit Year Modal Elements
+            const editYearModalBackdrop = document.getElementById('editYearModalBackdrop');
+            const btnOpenEditYearModal = document.getElementById('btnOpenEditYearModal');
+            const btnCloseEditYearModal = document.getElementById('btnCloseEditYearModal');
+            const btnCancelEditYearModal = document.getElementById('btnCancelEditYearModal');
+            const editYearForm = document.getElementById('editYearForm');
+            const inputEditYearVal = document.getElementById('inputEditYearVal');
+            const inputEditYearTitle = document.getElementById('inputEditYearTitle');
+            const editYearDisplayLabel = document.getElementById('editYearDisplayLabel');
+            const editPositionsChecklist = document.getElementById('editPositionsChecklist');
+            const inputAddCustomPos = document.getElementById('inputAddCustomPos');
+            const btnAddCustomPos = document.getElementById('btnAddCustomPos');
+
+            // Delete Year Modal Elements
+            const deleteYearModalBackdrop = document.getElementById('deleteYearModalBackdrop');
+            const btnOpenDeleteYearModal = document.getElementById('btnOpenDeleteYearModal');
+            const btnCloseDeleteYearModal = document.getElementById('btnCloseDeleteYearModal');
+            const btnCancelDeleteYearModal = document.getElementById('btnCancelDeleteYearModal');
+            const btnConfirmDeleteYear = document.getElementById('btnConfirmDeleteYear');
+            const deleteYearDisplayLabel = document.getElementById('deleteYearDisplayLabel');
 
             // Encode Modal Elements
             const encodeModalBackdrop = document.getElementById('encodeModalBackdrop');
@@ -1941,6 +2120,201 @@
                         console.error("Add Year error:", err);
                         alert("Error communicating with database. Please try again.");
                     });
+            });
+
+            // ==========================================
+            // MODAL A2: EDIT ELECTION YEAR & POSITIONS
+            // ==========================================
+            const standardPositionsList = [
+                'Mayor', 'Vice Mayor', 'Governor', 'Congressman', 'Councilors',
+                'Barangay Captain', 'Barangay Kagawads', 'SK Chairman', 'SK Kagawads'
+            ];
+
+            function openEditYearModal() {
+                inputEditYearVal.value = currentYear;
+                editYearDisplayLabel.textContent = currentYear;
+                inputEditYearTitle.value = `${currentYear} Local & National Elections`;
+
+                // Populate positions checklist
+                const activePositions = positionsByYear[currentYear] || ['Mayor', 'Vice Mayor', 'Governor', 'Congressman', 'Councilors'];
+                
+                // Combine standard positions with active ones to ensure everything is visible
+                const combinedPositions = Array.from(new Set([...activePositions, ...standardPositionsList]));
+
+                editPositionsChecklist.innerHTML = '';
+                combinedPositions.forEach(pos => {
+                    const isChecked = activePositions.includes(pos);
+                    const label = document.createElement('label');
+                    label.className = 'pos-check-label';
+                    label.innerHTML = `<input type="checkbox" name="positions[]" value="${pos}" ${isChecked ? 'checked' : ''}> ${pos}`;
+                    editPositionsChecklist.appendChild(label);
+                });
+
+                inputAddCustomPos.value = '';
+                editYearModalBackdrop.style.display = 'flex';
+            }
+
+            function closeEditYearModal() {
+                editYearModalBackdrop.style.display = 'none';
+            }
+
+            btnOpenEditYearModal.addEventListener('click', openEditYearModal);
+            btnCloseEditYearModal.addEventListener('click', closeEditYearModal);
+            btnCancelEditYearModal.addEventListener('click', closeEditYearModal);
+
+            // Add Custom Position Tag
+            btnAddCustomPos.addEventListener('click', function() {
+                const val = inputAddCustomPos.value.trim();
+                if (!val) return;
+
+                const existingInputs = Array.from(editPositionsChecklist.querySelectorAll('input'));
+                const found = existingInputs.find(i => i.value.toLowerCase() === val.toLowerCase());
+                if (found) {
+                    found.checked = true;
+                    inputAddCustomPos.value = '';
+                    return;
+                }
+
+                const label = document.createElement('label');
+                label.className = 'pos-check-label';
+                label.innerHTML = `<input type="checkbox" name="positions[]" value="${val}" checked> ${val}`;
+                editPositionsChecklist.appendChild(label);
+                inputAddCustomPos.value = '';
+            });
+
+            // Submit Edit Year Form
+            editYearForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const yr = inputEditYearVal.value.trim();
+                const title = inputEditYearTitle.value.trim();
+                const checkedPositions = [];
+                editPositionsChecklist.querySelectorAll('input[name="positions[]"]:checked').forEach(chk => {
+                    checkedPositions.push(chk.value);
+                });
+
+                if (checkedPositions.length === 0) {
+                    alert('Please select at least one electoral position to include.');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('btnSubmitEditYear');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving Changes...';
+
+                fetch("{{ route('admin.electoral.update_year') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        year: yr,
+                        title: title,
+                        positions: checkedPositions
+                    })
+                })
+                .then(r => r.json())
+                .then(res => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save Changes';
+
+                    if (res.success) {
+                        positionsByYear[yr] = res.positions || checkedPositions;
+                        if (res.dataset && res.dataset[yr]) {
+                            fullDataset[yr] = res.dataset[yr];
+                        }
+
+                        // Update current position if active year is being edited
+                        if (currentYear === yr) {
+                            if (!checkedPositions.includes(currentPosition)) {
+                                currentPosition = checkedPositions[0];
+                            }
+                            populatePositions(currentYear, selectPosition, currentPosition);
+                            refreshDashboard();
+                        }
+
+                        closeEditYearModal();
+                        showToast(`Election Year ${yr} positions updated successfully!`);
+                    } else {
+                        alert(res.message || 'Failed to update election year.');
+                    }
+                })
+                .catch(err => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Save Changes';
+                    console.error("Update Year error:", err);
+                    alert("Error communicating with database. Please try again.");
+                });
+            });
+
+            // ==========================================
+            // MODAL A3: DELETE ELECTION YEAR
+            // ==========================================
+            function openDeleteYearModal() {
+                if (availableYears.length <= 1) {
+                    alert("Cannot delete the only remaining election year in database.");
+                    return;
+                }
+                deleteYearDisplayLabel.textContent = currentYear;
+                deleteYearModalBackdrop.style.display = 'flex';
+            }
+
+            function closeDeleteYearModal() {
+                deleteYearModalBackdrop.style.display = 'none';
+            }
+
+            btnOpenDeleteYearModal.addEventListener('click', openDeleteYearModal);
+            btnCloseDeleteYearModal.addEventListener('click', closeDeleteYearModal);
+            btnCancelDeleteYearModal.addEventListener('click', closeDeleteYearModal);
+
+            btnConfirmDeleteYear.addEventListener('click', function() {
+                const yrToDelete = currentYear;
+                btnConfirmDeleteYear.disabled = true;
+                btnConfirmDeleteYear.textContent = 'Deleting...';
+
+                fetch("{{ route('admin.electoral.delete_year') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        year: yrToDelete
+                    })
+                })
+                .then(r => r.json())
+                .then(res => {
+                    btnConfirmDeleteYear.disabled = false;
+                    btnConfirmDeleteYear.textContent = 'Yes, Delete Year';
+
+                    if (res.success) {
+                        availableYears = availableYears.filter(y => y !== yrToDelete);
+                        delete positionsByYear[yrToDelete];
+                        delete fullDataset[yrToDelete];
+
+                        // Switch to the latest available year
+                        const nextYear = availableYears[availableYears.length - 1] || '2025';
+                        currentYear = nextYear;
+                        const newPositions = positionsByYear[currentYear] || ['Mayor'];
+                        currentPosition = newPositions[0] || 'Mayor';
+
+                        renderYearPills();
+                        populatePositions(currentYear, selectPosition, currentPosition);
+                        refreshDashboard();
+
+                        closeDeleteYearModal();
+                        showToast(`Election Year ${yrToDelete} deleted from database!`);
+                    } else {
+                        alert(res.message || 'Failed to delete election year.');
+                    }
+                })
+                .catch(err => {
+                    btnConfirmDeleteYear.disabled = false;
+                    btnConfirmDeleteYear.textContent = 'Yes, Delete Year';
+                    console.error("Delete Year error:", err);
+                    alert("Error deleting election year from database.");
+                });
             });
 
             // ==========================================

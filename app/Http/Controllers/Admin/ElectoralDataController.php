@@ -29,22 +29,6 @@ class ElectoralDataController extends Controller
     }
 
     /**
-     * Get base voters map from database
-     */
-    private function getBaseVotersMap(): array
-    {
-        $barangays = Barangay::where('is_active', true)->orderBy('id')->get();
-        if ($barangays->isEmpty()) {
-            return [
-                1 => 5840, 2 => 6920, 3 => 12450, 4 => 4610, 5 => 8100, 6 => 7430,
-                7 => 3200, 8 => 5350, 9 => 6780, 10 => 4910, 11 => 7890, 12 => 14200,
-                13 => 6120, 14 => 5410, 15 => 4820, 16 => 9850, 17 => 5100, 18 => 6730
-            ];
-        }
-        return $barangays->pluck('base_voters', 'id')->toArray();
-    }
-
-    /**
      * Get full formatted dataset from MySQL database
      */
     private function getDatasetFromDatabase(?string $filterYear = null, ?string $filterPosition = null): array
@@ -153,7 +137,7 @@ class ElectoralDataController extends Controller
     {
         $barangays = Barangay::where('is_active', true)
             ->orderBy('id', 'asc')
-            ->get(['id', 'name', 'slug', 'base_voters', 'pin_x', 'pin_y']);
+            ->get(['id', 'name', 'slug', 'pin_x', 'pin_y']);
 
         return response()->json($barangays);
     }
@@ -199,15 +183,6 @@ class ElectoralDataController extends Controller
             ]);
         }
 
-        // Estimate voter growth factor based on year
-        $yearInt = (int)$year;
-        $growthFactor = 1.0;
-        if ($yearInt > 2025) {
-            $growthFactor = 1.05 + (($yearInt - 2025) * 0.025);
-        } elseif ($yearInt >= 2013) {
-            $growthFactor = 0.75 + (($yearInt - 2013) * 0.025);
-        }
-
         // Default candidate presets for newly created future election positions
         $defaultCandidatesPreset = [
             'Mayor' => [
@@ -234,10 +209,6 @@ class ElectoralDataController extends Controller
         ];
 
         $barangays = Barangay::where('is_active', true)->orderBy('id')->get();
-        if ($barangays->isEmpty()) {
-            $bgyMap = $this->getBarangayMap();
-            $baseVoters = $this->getBaseVotersMap();
-        }
 
         // Initialize barangay records in the database for each position if they don't already exist
         foreach ($positions as $position) {
@@ -248,8 +219,6 @@ class ElectoralDataController extends Controller
 
             if ($barangays->isNotEmpty()) {
                 foreach ($barangays as $bgy) {
-                    $regVoters = (int)round(($bgy->base_voters ?: 5000) * $growthFactor);
-
                     ElectoralRecord::firstOrCreate(
                         [
                             'year' => $year,
@@ -258,7 +227,7 @@ class ElectoralDataController extends Controller
                         ],
                         [
                             'barangay_name' => $bgy->name,
-                            'registered_voters' => $regVoters,
+                            'registered_voters' => 0,
                             'actual_votes' => 0,
                             'turnout_percentage' => 0.00,
                             'winner_name' => $cPreset[0]['name'] ?? 'Pending',
@@ -269,10 +238,8 @@ class ElectoralDataController extends Controller
                     );
                 }
             } else {
+                $bgyMap = $this->getBarangayMap();
                 foreach ($bgyMap as $bgyId => $bgyName) {
-                    $base = $baseVoters[$bgyId] ?? 5000;
-                    $regVoters = (int)round($base * $growthFactor);
-
                     ElectoralRecord::firstOrCreate(
                         [
                             'year' => $year,
@@ -281,7 +248,7 @@ class ElectoralDataController extends Controller
                         ],
                         [
                             'barangay_name' => $bgyName,
-                            'registered_voters' => $regVoters,
+                            'registered_voters' => 0,
                             'actual_votes' => 0,
                             'turnout_percentage' => 0.00,
                             'winner_name' => $cPreset[0]['name'] ?? 'Pending',
@@ -304,6 +271,122 @@ class ElectoralDataController extends Controller
             'title' => $title,
             'positions' => $positions,
             'dataset' => $newYearDataset
+        ]);
+    }
+
+    /**
+     * Update an Election Year and its included Electoral Positions
+     */
+    public function updateYear(Request $request)
+    {
+        $request->validate([
+            'year' => 'required|string|max:10',
+            'title' => 'nullable|string|max:150',
+            'positions' => 'required|array|min:1',
+            'positions.*' => 'string|max:100'
+        ]);
+
+        $year = trim($request->input('year'));
+        $title = trim($request->input('title') ?? "{$year} Elections");
+        $positions = $request->input('positions', []);
+
+        // Clean and unique positions
+        $positions = array_values(array_unique(array_filter(array_map('trim', $positions))));
+
+        $electionYear = ElectionYear::where('year', $year)->first();
+        if (!$electionYear) {
+            return response()->json(['success' => false, 'message' => "Election Year {$year} not found."], 404);
+        }
+
+        $oldPositions = $electionYear->positions ?? [];
+        $electionYear->update([
+            'title' => $title,
+            'positions' => $positions,
+        ]);
+
+        // Find newly added positions
+        $addedPositions = array_diff($positions, $oldPositions);
+        // Find removed positions
+        $removedPositions = array_diff($oldPositions, $positions);
+
+        // Delete records for removed positions if any
+        if (!empty($removedPositions)) {
+            ElectoralRecord::where('year', $year)->whereIn('position', $removedPositions)->delete();
+        }
+
+        // Initialize barangay records for newly added positions
+        if (!empty($addedPositions)) {
+            $barangays = Barangay::where('is_active', true)->orderBy('id')->get();
+
+            foreach ($addedPositions as $pos) {
+                foreach ($barangays as $bgy) {
+                    ElectoralRecord::firstOrCreate(
+                        [
+                            'year' => $year,
+                            'position' => $pos,
+                            'barangay_id' => $bgy->id,
+                        ],
+                        [
+                            'barangay_name' => $bgy->name,
+                            'registered_voters' => 0,
+                            'actual_votes' => 0,
+                            'turnout_percentage' => 0.00,
+                            'winner_name' => 'None',
+                            'winner_color' => '#64748B',
+                            'winner_votes' => 0,
+                            'candidates_data' => [
+                                ['name' => 'Candidate 1', 'color' => '#075998', 'votes' => 0],
+                                ['name' => 'Candidate 2', 'color' => '#E53935', 'votes' => 0],
+                            ],
+                        ]
+                    );
+                }
+            }
+        }
+
+        $allYears = ElectionYear::where('is_active', true)->orderBy('year', 'asc')->get();
+        $updatedDataset = $this->getDatasetFromDatabase($year);
+
+        return response()->json([
+            'success' => true,
+            'message' => "Election Year {$year} updated successfully!",
+            'year' => $year,
+            'title' => $title,
+            'positions' => $positions,
+            'years' => $allYears,
+            'dataset' => $updatedDataset
+        ]);
+    }
+
+    /**
+     * Delete an Election Year and all its associated records
+     */
+    public function deleteYear(Request $request)
+    {
+        $request->validate([
+            'year' => 'required|string|max:10'
+        ]);
+
+        $year = trim($request->input('year'));
+
+        $electionYear = ElectionYear::where('year', $year)->first();
+        if (!$electionYear) {
+            return response()->json(['success' => false, 'message' => "Election Year {$year} not found."], 404);
+        }
+
+        // Delete electoral records under this year
+        ElectoralRecord::where('year', $year)->delete();
+
+        // Delete the election year
+        $electionYear->delete();
+
+        $remainingYears = ElectionYear::where('is_active', true)->orderBy('year', 'asc')->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Election Year {$year} deleted successfully!",
+            'deleted_year' => $year,
+            'remaining_years' => $remainingYears
         ]);
     }
 

@@ -343,34 +343,37 @@
             pointer-events: none;
         }
 
-        /* Interactive Dynamic Hotspot Number Pins (1 - 18) */
+        /* Interactive Dynamic Hotspot Barangay Name Badge Pins (Patagilid / Slanted & Compact) */
         .map-hotspot-pin {
             position: absolute;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
+            padding: 1.5px 5px;
+            border-radius: 8px;
+            transform: translate(-50%, -50%) rotate(-48deg);
+            transform-origin: center center;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.84rem;
-            font-weight: 800;
+            font-size: 0.50rem;
+            font-weight: 700;
             color: #FFFFFF;
             cursor: pointer;
-            border: 2px solid rgba(255, 255, 255, 0.95);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
-            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.55);
+            transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
             z-index: 15;
+            white-space: nowrap;
+            letter-spacing: 0;
+            line-height: 1.2;
+            user-select: none;
         }
 
         .map-hotspot-pin::after {
             content: '';
             position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 2px solid inherit;
+            inset: -2px;
+            border-radius: 10px;
+            border: 1.5px solid inherit;
             animation: pinPulse 2.2s infinite;
             pointer-events: none;
             opacity: 0;
@@ -383,28 +386,28 @@
             }
 
             70% {
-                transform: scale(1.8);
+                transform: scale(1.3);
                 opacity: 0;
             }
 
             100% {
-                transform: scale(1.8);
+                transform: scale(1.3);
                 opacity: 0;
             }
         }
 
         .map-hotspot-pin:hover {
-            transform: translate(-50%, -50%) scale(1.35);
-            z-index: 30;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 255, 255, 0.8);
+            transform: translate(-50%, -50%) rotate(0deg) scale(1.30);
+            z-index: 50;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75), 0 0 12px rgba(255, 255, 255, 0.9);
             border-color: #FFFFFF;
         }
 
         .map-hotspot-pin.active-selected {
-            transform: translate(-50%, -50%) scale(1.4);
+            transform: translate(-50%, -50%) rotate(0deg) scale(1.35);
             border-color: #FFFFFF !important;
-            box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0, 0, 0, 0.7) !important;
-            z-index: 35;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6), 0 8px 25px rgba(0, 0, 0, 0.85) !important;
+            z-index: 60;
         }
 
         .map-hotspot-pin.active-selected::after {
@@ -418,12 +421,12 @@
             }
 
             80% {
-                transform: scale(2.2);
+                transform: scale(1.5);
                 opacity: 0;
             }
 
             100% {
-                transform: scale(2.2);
+                transform: scale(1.5);
                 opacity: 0;
             }
         }
@@ -1049,7 +1052,7 @@
                     <select id="selectBarangay" class="custom-select-input" aria-label="Select Barangay">
                         <option value="">-- Choose Barangay (18) --</option>
                         @foreach ($barangayNames as $bId => $bName)
-                            <option value="{{ $bId }}">{{ $bId }}. {{ $bName }}</option>
+                            <option value="{{ $bId }}">Brgy. {{ $bName }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -1095,11 +1098,6 @@
                     <button type="button" class="map-btn-icon" id="btnResetZoom" title="Reset View">&#x21bb;</button>
                 </div>
 
-                <!-- Watermark Info -->
-                <div class="map-watermark-badge">
-                    📍 Mariveles Official Map &bull; Colored by Winning Candidate
-                </div>
-
                 <!-- Hover Tooltip -->
                 <div id="mapHoverTooltip">
                     <div class="tip-name" id="tipName">Barangay Name</div>
@@ -1108,7 +1106,7 @@
 
                 <!-- Client Map Image with Hotspot Pins -->
                 <div class="map-viewport-wrapper" id="mapViewport">
-                    <img src="{{ asset('images/Mariveles-Map.png') }}" alt="Mariveles Bataan Map" class="client-map-img"
+                    <img src="{{ asset('images/Map.jpg') }}" alt="Mariveles Bataan Map" class="client-map-img"
                         id="clientMapImg">
 
                     <!-- 18 Clickable Hotspot Pins colored by winner -->
@@ -1126,7 +1124,14 @@
                     <div class="detail-meta" id="cardYearPositionMeta">2025 Mayor Results</div>
                     <div class="detail-title" id="cardBgyName">Barangay Name</div>
                 </div>
-                <div class="bgy-number-badge" id="cardNumberBadge">1</div>
+                <div class="bgy-number-badge" id="cardNumberBadge" title="Winning Candidate Color Marker">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none"
+                        viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                    </svg>
+                </div>
             </div>
 
             <!-- Registered Voters & Actual Votes -->
@@ -1280,7 +1285,7 @@
                         <label for="modalBarangay">Barangay</label>
                         <select id="modalBarangay" name="barangay_id" class="form-control-custom">
                             @foreach ($barangayNames as $bId => $bName)
-                                <option value="{{ $bId }}">{{ $bId }}. {{ $bName }}</option>
+                                <option value="{{ $bId }}">Brgy. {{ $bName }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -1344,83 +1349,93 @@
             let availableYears = @json($years);
             let positionsByYear = @json($yearPositionsMap);
 
-            // Relative hotspot coordinates on Mariveles-Map.png
+            // Relative hotspot coordinates aligned with numbers 1-18 on Map.jpg
             const pinCoordinates = {
                 1: {
                     x: 71.0,
-                    y: 47.0
+                    y: 33.2
                 },
                 2: {
-                    x: 87.8,
-                    y: 48.0
+                    x: 88.8,
+                    y: 33.6
                 },
                 3: {
-                    x: 63.5,
-                    y: 53.8
+                    x: 63.3,
+                    y: 41.8
                 },
                 4: {
-                    x: 77.8,
-                    y: 54.2
+                    x: 78.0,
+                    y: 42.8
                 },
                 5: {
-                    x: 36.0,
-                    y: 52.5
+                    x: 34.8,
+                    y: 40.5
                 },
                 6: {
-                    x: 53.0,
-                    y: 53.8
+                    x: 52.6,
+                    y: 42.2
                 },
                 7: {
-                    x: 23.5,
-                    y: 56.5
+                    x: 22.5,
+                    y: 47.2
                 },
                 8: {
-                    x: 45.0,
-                    y: 55.2
+                    x: 44.5,
+                    y: 44.2
                 },
                 9: {
-                    x: 78.8,
-                    y: 60.0
+                    x: 79.6,
+                    y: 50.1
                 },
                 10: {
-                    x: 39.0,
-                    y: 60.0
+                    x: 38.5,
+                    y: 51.1
                 },
                 11: {
-                    x: 77.0,
-                    y: 66.0
+                    x: 77.7,
+                    y: 59.2
                 },
                 12: {
-                    x: 68.5,
-                    y: 67.5
+                    x: 68.2,
+                    y: 62.2
                 },
                 13: {
-                    x: 44.5,
-                    y: 67.5
+                    x: 43.6,
+                    y: 61.8
                 },
                 14: {
-                    x: 59.5,
-                    y: 68.5
+                    x: 58.9,
+                    y: 62.9
                 },
                 15: {
-                    x: 51.8,
-                    y: 68.2
+                    x: 51.7,
+                    y: 63.0
                 },
                 16: {
-                    x: 36.8,
-                    y: 72.5
+                    x: 36.0,
+                    y: 67.9
                 },
                 17: {
-                    x: 58.5,
-                    y: 73.5
+                    x: 58.1,
+                    y: 69.5
                 },
                 18: {
-                    x: 41.5,
-                    y: 76.2
+                    x: 40.5,
+                    y: 74.7
                 }
             };
 
             const barangayNames = @json($barangayNames);
+            const barangaysList = @json($barangays ?? []);
+
+            // Hydrate pin coordinates from Database if available
+            if (barangaysList && barangaysList.length > 0) {
+                barangaysList.forEach(b => {
+                    if (b.pin_x && b.pin_y) {
+                        pinCoordinates[b.id] = { x: parseFloat(b.pin_x), y: parseFloat(b.pin_y) };
+                    }
+                });
+            }
 
             // Current State
             let currentYear = '{{ $defaultYear }}';
@@ -1622,7 +1637,7 @@
                     pin.style.left = `${coords.x}%`;
                     pin.style.top = `${coords.y}%`;
                     pin.style.backgroundColor = bgy.winner_color || '#075998';
-                    pin.textContent = bgyId;
+                    pin.textContent = barangayNames[bgyId] || ('Brgy. ' + bgyId);
 
                     if (bgyId === selectedBarangayId) {
                         pin.classList.add('active-selected');
@@ -1630,7 +1645,7 @@
 
                     // Hover Tooltip
                     pin.addEventListener('mouseenter', function(e) {
-                        tipName.textContent = `${bgyId}. Brgy. ${barangayNames[bgyId]}`;
+                        tipName.textContent = `Brgy. ${barangayNames[bgyId]}`;
                         tipStat.textContent =
                             `Winner: ${bgy.winner_name} | Turnout: ${bgy.turnout_percentage || 0}%`;
                         tooltip.style.display = 'block';
@@ -1671,7 +1686,7 @@
                     btn.className = `bgy-pill-btn ${bgyId === selectedBarangayId ? 'active' : ''}`;
                     btn.id = `pill-bgy-${bgyId}`;
                     btn.innerHTML =
-                        `<span class="bgy-pill-num" style="background:${bgy.winner_color || '#075998'};">${bgyId}</span> ${barangayNames[bgyId]}`;
+                        `<span class="bgy-pill-dot" style="background:${bgy.winner_color || '#075998'}; width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0;"></span> ${barangayNames[bgyId]}`;
                     btn.addEventListener('click', () => selectBarangay(bgyId));
                     pillsList.appendChild(btn);
                 }
@@ -1713,7 +1728,6 @@
                 };
 
                 cardBgyName.textContent = `Brgy. ${barangayNames[bgyId]}`;
-                cardNumberBadge.textContent = bgyId;
                 cardNumberBadge.style.backgroundColor = bgy.winner_color || '#075998';
 
                 cardRegisteredVoters.textContent = Number(bgy.registered_voters || 0).toLocaleString();
@@ -1769,8 +1783,9 @@
                 });
             }
 
-            // Map Drag & Zoom Controls
-            let currentScale = 1;
+            // Map Drag & Zoom Controls (Default: 1.5x - 2 zoom levels closer)
+            const DEFAULT_SCALE = 1.5;
+            let currentScale = DEFAULT_SCALE;
             let panX = 0,
                 panY = 0;
             let isPanning = false;
@@ -1784,7 +1799,7 @@
             }
 
             document.getElementById('btnZoomIn').addEventListener('click', () => {
-                currentScale = Math.min(3.0, currentScale + 0.25);
+                currentScale = Math.min(3.5, currentScale + 0.25);
                 updateTransform();
             });
 
@@ -1794,7 +1809,7 @@
             });
 
             document.getElementById('btnResetZoom').addEventListener('click', () => {
-                currentScale = 1;
+                currentScale = DEFAULT_SCALE;
                 panX = 0;
                 panY = 0;
                 updateTransform();
@@ -2103,6 +2118,7 @@
             });
 
             // Initialize Dashboard
+            updateTransform();
             renderYearPills();
             populatePositions(currentYear, selectPosition, currentPosition);
             refreshDashboard();

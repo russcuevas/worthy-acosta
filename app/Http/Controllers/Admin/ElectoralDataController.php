@@ -6,29 +6,50 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ElectionYear;
 use App\Models\ElectoralRecord;
+use App\Models\Barangay;
 
 class ElectoralDataController extends Controller
 {
-    private array $barangayNames = [
-        1 => "Alion", 2 => "Batangas II", 3 => "Cabcaben", 4 => "Lucanin",
-        5 => "Balon-Anito", 6 => "Maligaya", 7 => "Biaan", 8 => "Malaya",
-        9 => "Townsite", 10 => "San Isidro", 11 => "Mt. View", 12 => "Alas-Asin",
-        13 => "Camaya", 14 => "Baseco Country", 15 => "San Carlos", 16 => "Poblacion",
-        17 => "Sisiman", 18 => "Ipag"
-    ];
+    /**
+     * Get barangay name map from database (fallback to defaults if table empty)
+     */
+    private function getBarangayMap(): array
+    {
+        $barangays = Barangay::where('is_active', true)->orderBy('id')->get();
+        if ($barangays->isEmpty()) {
+            return [
+                1 => "Alion", 2 => "Batangas II", 3 => "Cabcaben", 4 => "Lucanin",
+                5 => "Balon-Anito", 6 => "Maligaya", 7 => "Biaan", 8 => "Malaya",
+                9 => "Townsite", 10 => "San Isidro", 11 => "Mt. View", 12 => "Alas-Asin",
+                13 => "Camaya", 14 => "Baseco Country", 15 => "San Carlos", 16 => "Poblacion",
+                17 => "Sisiman", 18 => "Ipag"
+            ];
+        }
+        return $barangays->pluck('name', 'id')->toArray();
+    }
 
-    private array $baseVoters = [
-        1 => 5840, 2 => 6920, 3 => 12450, 4 => 4610, 5 => 8100, 6 => 7430,
-        7 => 3200, 8 => 5350, 9 => 6780, 10 => 4910, 11 => 7890, 12 => 14200,
-        13 => 6120, 14 => 5410, 15 => 4820, 16 => 9850, 17 => 5100, 18 => 6730
-    ];
+    /**
+     * Get base voters map from database
+     */
+    private function getBaseVotersMap(): array
+    {
+        $barangays = Barangay::where('is_active', true)->orderBy('id')->get();
+        if ($barangays->isEmpty()) {
+            return [
+                1 => 5840, 2 => 6920, 3 => 12450, 4 => 4610, 5 => 8100, 6 => 7430,
+                7 => 3200, 8 => 5350, 9 => 6780, 10 => 4910, 11 => 7890, 12 => 14200,
+                13 => 6120, 14 => 5410, 15 => 4820, 16 => 9850, 17 => 5100, 18 => 6730
+            ];
+        }
+        return $barangays->pluck('base_voters', 'id')->toArray();
+    }
 
     /**
      * Get full formatted dataset from MySQL database
      */
     private function getDatasetFromDatabase(?string $filterYear = null, ?string $filterPosition = null): array
     {
-        $query = ElectoralRecord::query();
+        $query = ElectoralRecord::with('barangay');
 
         if ($filterYear) {
             $query->where('year', $filterYear);
@@ -45,6 +66,7 @@ class ElectoralDataController extends Controller
             $yr = (string)$record->year;
             $pos = (string)$record->position;
             $bgyId = (int)$record->barangay_id;
+            $bgyName = $record->barangay ? $record->barangay->name : $record->barangay_name;
 
             if (!isset($dataset[$yr])) {
                 $dataset[$yr] = [];
@@ -55,7 +77,7 @@ class ElectoralDataController extends Controller
 
             $dataset[$yr][$pos][$bgyId] = [
                 'barangay_id' => $bgyId,
-                'barangay_name' => $record->barangay_name,
+                'barangay_name' => $bgyName,
                 'registered_voters' => (int)$record->registered_voters,
                 'actual_votes' => (int)$record->actual_votes,
                 'turnout_percentage' => (float)$record->turnout_percentage,
@@ -86,6 +108,8 @@ class ElectoralDataController extends Controller
         }
 
         $dataset = $this->getDatasetFromDatabase();
+        $barangayNames = $this->getBarangayMap();
+        $barangays = Barangay::where('is_active', true)->orderBy('id')->get();
 
         // Map year positions
         $yearPositionsMap = [];
@@ -105,7 +129,8 @@ class ElectoralDataController extends Controller
             'defaultYear' => $defaultYear,
             'defaultPosition' => $defaultPosition,
             'initialDataset' => $dataset,
-            'barangayNames' => $this->barangayNames
+            'barangayNames' => $barangayNames,
+            'barangays' => $barangays,
         ]);
     }
 
@@ -119,6 +144,18 @@ class ElectoralDataController extends Controller
             ->get(['year', 'title', 'positions', 'is_active']);
 
         return response()->json($years);
+    }
+
+    /**
+     * Return list of all Barangays from Database
+     */
+    public function getBarangayList()
+    {
+        $barangays = Barangay::where('is_active', true)
+            ->orderBy('id', 'asc')
+            ->get(['id', 'name', 'slug', 'base_voters', 'pin_x', 'pin_y']);
+
+        return response()->json($barangays);
     }
 
     /**
@@ -196,34 +233,64 @@ class ElectoralDataController extends Controller
             ]
         ];
 
-        // Initialize 18 barangay records in the database for each position if they don't already exist
+        $barangays = Barangay::where('is_active', true)->orderBy('id')->get();
+        if ($barangays->isEmpty()) {
+            $bgyMap = $this->getBarangayMap();
+            $baseVoters = $this->getBaseVotersMap();
+        }
+
+        // Initialize barangay records in the database for each position if they don't already exist
         foreach ($positions as $position) {
             $cPreset = $defaultCandidatesPreset[$position] ?? [
                 ['name' => 'Candidate 1', 'color' => '#075998', 'votes' => 0],
                 ['name' => 'Candidate 2', 'color' => '#E53935', 'votes' => 0]
             ];
 
-            foreach ($this->barangayNames as $bgyId => $bgyName) {
-                $base = $this->baseVoters[$bgyId] ?? 5000;
-                $regVoters = (int)round($base * $growthFactor);
+            if ($barangays->isNotEmpty()) {
+                foreach ($barangays as $bgy) {
+                    $regVoters = (int)round(($bgy->base_voters ?: 5000) * $growthFactor);
 
-                ElectoralRecord::firstOrCreate(
-                    [
-                        'year' => $year,
-                        'position' => $position,
-                        'barangay_id' => $bgyId,
-                    ],
-                    [
-                        'barangay_name' => $bgyName,
-                        'registered_voters' => $regVoters,
-                        'actual_votes' => 0,
-                        'turnout_percentage' => 0.00,
-                        'winner_name' => $cPreset[0]['name'] ?? 'Pending',
-                        'winner_color' => $cPreset[0]['color'] ?? '#075998',
-                        'winner_votes' => 0,
-                        'candidates_data' => $cPreset,
-                    ]
-                );
+                    ElectoralRecord::firstOrCreate(
+                        [
+                            'year' => $year,
+                            'position' => $position,
+                            'barangay_id' => $bgy->id,
+                        ],
+                        [
+                            'barangay_name' => $bgy->name,
+                            'registered_voters' => $regVoters,
+                            'actual_votes' => 0,
+                            'turnout_percentage' => 0.00,
+                            'winner_name' => $cPreset[0]['name'] ?? 'Pending',
+                            'winner_color' => $cPreset[0]['color'] ?? '#075998',
+                            'winner_votes' => 0,
+                            'candidates_data' => $cPreset,
+                        ]
+                    );
+                }
+            } else {
+                foreach ($bgyMap as $bgyId => $bgyName) {
+                    $base = $baseVoters[$bgyId] ?? 5000;
+                    $regVoters = (int)round($base * $growthFactor);
+
+                    ElectoralRecord::firstOrCreate(
+                        [
+                            'year' => $year,
+                            'position' => $position,
+                            'barangay_id' => $bgyId,
+                        ],
+                        [
+                            'barangay_name' => $bgyName,
+                            'registered_voters' => $regVoters,
+                            'actual_votes' => 0,
+                            'turnout_percentage' => 0.00,
+                            'winner_name' => $cPreset[0]['name'] ?? 'Pending',
+                            'winner_color' => $cPreset[0]['color'] ?? '#075998',
+                            'winner_votes' => 0,
+                            'candidates_data' => $cPreset,
+                        ]
+                    );
+                }
             }
         }
 
@@ -298,7 +365,8 @@ class ElectoralDataController extends Controller
         usort($sorted, function($a, $b) { return $b['votes'] - $a['votes']; });
         $winner = !empty($sorted) ? $sorted[0] : ['name' => 'None', 'color' => '#64748B', 'votes' => 0];
 
-        $bgyName = $this->barangayNames[$barangayId] ?? ("Barangay " . $barangayId);
+        $barangayModel = Barangay::find($barangayId);
+        $bgyName = $barangayModel ? $barangayModel->name : ($this->getBarangayMap()[$barangayId] ?? ("Barangay " . $barangayId));
 
         // Ensure election year exists
         $ey = ElectionYear::firstOrCreate(

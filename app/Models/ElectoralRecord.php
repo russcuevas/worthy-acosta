@@ -36,4 +36,9 @@ class ElectoralRecord extends Model
     {
         return $this->belongsTo(ElectionYear::class, 'year', 'year');
     }
+
+    public function barangay()
+    {
+        return $this->belongsTo(Barangay::class, 'barangay_id', 'id');
+    }
 }

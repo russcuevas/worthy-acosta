@@ -5,52 +5,18 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\ElectionYear;
 use App\Models\ElectoralRecord;
+use App\Models\Barangay;
 
 class ElectoralDataSeeder extends Seeder
 {
     public function run(): void
     {
-        $barangayNames = [
-            1 => "Alion",
-            2 => "Batangas II",
-            3 => "Cabcaben",
-            4 => "Lucanin",
-            5 => "Balon-Anito",
-            6 => "Maligaya",
-            7 => "Biaan",
-            8 => "Malaya",
-            9 => "Townsite",
-            10 => "San Isidro",
-            11 => "Mt. View",
-            12 => "Alas-Asin",
-            13 => "Camaya",
-            14 => "Baseco Country",
-            15 => "San Carlos",
-            16 => "Poblacion",
-            17 => "Sisiman",
-            18 => "Ipag"
-        ];
-
-        $baseVoters = [
-            1 => 5840,
-            2 => 6920,
-            3 => 12450,
-            4 => 4610,
-            5 => 8100,
-            6 => 7430,
-            7 => 3200,
-            8 => 5350,
-            9 => 6780,
-            10 => 4910,
-            11 => 7890,
-            12 => 14200,
-            13 => 6120,
-            14 => 5410,
-            15 => 4820,
-            16 => 9850,
-            17 => 5100,
-            18 => 6730
-        ];
+        // Fetch all barangays directly from the database table
+        $barangays = Barangay::orderBy('id')->get();
+        if ($barangays->isEmpty()) {
+            $this->call(BarangaySeeder::class);
+            $barangays = Barangay::orderBy('id')->get();
+        }
 
         $candidatesByYear = [
             '2025' => [
@@ -203,7 +169,10 @@ class ElectoralDataSeeder extends Seeder
             foreach ($positions as $position) {
                 $candidatesTemplate = $positionsMap[$position];
 
-                foreach ($barangayNames as $bgyId => $bgyName) {
+                foreach ($barangays as $barangay) {
+                    $bgyId = $barangay->id;
+                    $bgyName = $barangay->name;
+
                     if ($cachedJson && isset($cachedJson[$year][$position][$bgyId])) {
                         $rec = $cachedJson[$year][$position][$bgyId];
                         ElectoralRecord::updateOrCreate(
@@ -214,7 +183,7 @@ class ElectoralDataSeeder extends Seeder
                             ],
                             [
                                 'barangay_name' => $rec['barangay_name'] ?? $bgyName,
-                                'registered_voters' => $rec['registered_voters'] ?? 5000,
+                                'registered_voters' => $rec['registered_voters'] ?? $barangay->base_voters ?? 5000,
                                 'actual_votes' => $rec['actual_votes'] ?? 4200,
                                 'turnout_percentage' => $rec['turnout_percentage'] ?? 84.0,
                                 'winner_name' => $rec['winner_name'] ?? 'Candidate',
@@ -237,7 +206,7 @@ class ElectoralDataSeeder extends Seeder
                         default => 1.0,
                     };
 
-                    $regVoters = (int)round(($baseVoters[$bgyId] ?? 5000) * $yearFactor);
+                    $regVoters = (int)round(($barangay->base_voters ?? 5000) * $yearFactor);
                     $turnoutRate = 0.80 + (($bgyId * 7 + (int)$year) % 15) / 100;
                     $actualVotes = (int)round($regVoters * $turnoutRate);
 

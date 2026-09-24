@@ -23,6 +23,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/electoral', [AdminElectoralDataController::class, 'index'])->name('electoral');
     Route::get('/electoral/data', [AdminElectoralDataController::class, 'getData'])->name('electoral.data');
     Route::get('/electoral/years', [AdminElectoralDataController::class, 'getYears'])->name('electoral.years');
+    Route::get('/electoral/barangays', [AdminElectoralDataController::class, 'getBarangayList'])->name('electoral.barangays');
     Route::post('/electoral/add-year', [AdminElectoralDataController::class, 'addYear'])->name('electoral.add_year');
     Route::post('/electoral/save-data', [AdminElectoralDataController::class, 'saveData'])->name('electoral.save_data');
     Route::get('/electoral/geojson', [AdminElectoralDataController::class, 'getBarangays'])->name('electoral.geojson');

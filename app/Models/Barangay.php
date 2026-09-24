@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Barangay extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'slug',
+        'base_voters',
+        'pin_x',
+        'pin_y',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'base_voters' => 'integer',
+        'pin_x' => 'float',
+        'pin_y' => 'float',
+        'is_active' => 'boolean',
+    ];
+
+    /**
+     * Get electoral records for this barangay.
+     */
+    public function electoralRecords()
+    {
+        return $this->hasMany(ElectoralRecord::class, 'barangay_id', 'id');
+    }
+}

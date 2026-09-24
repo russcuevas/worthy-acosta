@@ -1,0 +1,2112 @@
+@extends('layouts.app')
+
+@section('title', 'Electoral Data Dashboard - Mariveles, Bataan')
+@section('user_name', 'Administrator')
+@section('user_role_label', 'Admin Portal')
+@section('user_initials', 'AD')
+
+@section('styles')
+    <style>
+        /* Top Filter & Year Navigator Bar */
+        .electoral-controls-header {
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-sm);
+            padding: 18px 24px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Election Year Timeline / Ribbon */
+        .electoral-year-bar-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid #EEF2F6;
+        }
+
+        .year-nav-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .year-nav-label {
+            font-size: 0.76rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .year-pills-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .year-pill-btn {
+            background: #F1F5F9;
+            border: 1.5px solid #E2E8F0;
+            color: var(--color-deep-navy);
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            user-select: none;
+        }
+
+        .year-pill-btn:hover {
+            background: #E2E8F0;
+            border-color: #CBD5E1;
+            transform: translateY(-1px);
+        }
+
+        .year-pill-btn.active {
+            background: linear-gradient(135deg, var(--color-primary-blue), var(--color-deep-navy));
+            color: #FFFFFF;
+            border-color: var(--color-primary-blue);
+            box-shadow: 0 4px 12px rgba(7, 89, 152, 0.35);
+        }
+
+        .year-pill-btn .year-tag-future {
+            background: rgba(16, 185, 129, 0.2);
+            color: #059669;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-weight: 800;
+        }
+
+        .year-pill-btn.active .year-tag-future {
+            background: rgba(255, 255, 255, 0.25);
+            color: #FFFFFF;
+        }
+
+        .btn-add-year-pill {
+            background: #EFF6FF;
+            border: 1.5px dashed #60A5FA;
+            color: var(--color-primary-blue);
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 0.84rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-add-year-pill:hover {
+            background: #DBEAFE;
+            border-color: var(--color-primary-blue);
+            transform: translateY(-1px);
+        }
+
+        .db-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ECFDF5;
+            color: #065F46;
+            border: 1px solid #A7F3D0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .db-status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10B981;
+            border-radius: 50%;
+            box-shadow: 0 0 6px #10B981;
+        }
+
+        /* Secondary Row: Position, Jump to Barangay, & Action */
+        .controls-sub-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .filter-controls-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .filter-item-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .custom-select-input {
+            padding: 9px 16px;
+            border-radius: var(--radius-md);
+            border: 1.5px solid #D6E4F0;
+            background: #FFFFFF;
+            font-size: 0.90rem;
+            font-weight: 700;
+            color: var(--color-deep-navy);
+            outline: none;
+            cursor: pointer;
+            min-width: 170px;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-fast);
+        }
+
+        .custom-select-input:focus {
+            border-color: var(--color-primary-blue);
+            box-shadow: 0 0 0 3px rgba(7, 89, 152, 0.15);
+        }
+
+        .btn-encode-data {
+            background: linear-gradient(135deg, var(--color-primary-blue), var(--color-deep-navy));
+            color: #FFFFFF;
+            border: none;
+            border-radius: var(--radius-md);
+            padding: 10px 18px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 3px 10px rgba(7, 89, 152, 0.25);
+            transition: all var(--transition-fast);
+        }
+
+        .btn-encode-data:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(7, 89, 152, 0.35);
+        }
+
+        /* Candidate Legend Bar */
+        .candidate-legend-strip {
+            background: #FFFFFF;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--card-border);
+            padding: 12px 20px;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .legend-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: var(--color-deep-navy);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .legend-items-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .legend-candidate-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--color-deep-navy);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .legend-color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+            flex-shrink: 0;
+        }
+
+        .legend-win-tag {
+            background: #102A4E;
+            color: #FFFFFF;
+            font-size: 0.70rem;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 800;
+        }
+
+        /* Main Dashboard Grid */
+        .electoral-dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 22px;
+            align-items: start;
+        }
+
+        @media (max-width: 1100px) {
+            .electoral-dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Map Canvas Stage */
+        .map-card-container {
+            background: #0B192C;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .interactive-map-stage {
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 350px);
+            min-height: 560px;
+            background: #0A1626;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            cursor: grab;
+        }
+
+        .interactive-map-stage.dragging {
+            cursor: grabbing;
+        }
+
+        .map-viewport-wrapper {
+            position: relative;
+            display: inline-block;
+            transition: transform 0.15s ease-out;
+            transform-origin: center center;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .client-map-img {
+            display: block;
+            max-height: calc(100vh - 370px);
+            max-width: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+        }
+
+        /* Interactive Dynamic Hotspot Number Pins (1 - 18) */
+        .map-hotspot-pin {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.84rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            cursor: pointer;
+            border: 2px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 15;
+        }
+
+        .map-hotspot-pin::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid inherit;
+            animation: pinPulse 2.2s infinite;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        @keyframes pinPulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            70% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1.8);
+                opacity: 0;
+            }
+        }
+
+        .map-hotspot-pin:hover {
+            transform: translate(-50%, -50%) scale(1.35);
+            z-index: 30;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 16px rgba(255, 255, 255, 0.8);
+            border-color: #FFFFFF;
+        }
+
+        .map-hotspot-pin.active-selected {
+            transform: translate(-50%, -50%) scale(1.4);
+            border-color: #FFFFFF !important;
+            box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.45), 0 8px 25px rgba(0, 0, 0, 0.7) !important;
+            z-index: 35;
+        }
+
+        .map-hotspot-pin.active-selected::after {
+            animation: pinPulseActive 1.4s infinite;
+        }
+
+        @keyframes pinPulseActive {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            80% {
+                transform: scale(2.2);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(2.2);
+                opacity: 0;
+            }
+        }
+
+        /* Floating Tooltip */
+        #mapHoverTooltip {
+            position: absolute;
+            display: none;
+            background: rgba(16, 42, 78, 0.95);
+            backdrop-filter: blur(8px);
+            border-radius: 8px;
+            padding: 9px 15px;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+            border: 1px solid var(--color-wave-cyan);
+            color: #FFFFFF;
+            pointer-events: none;
+            z-index: 50;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transform: translate(-50%, -130%);
+            white-space: nowrap;
+        }
+
+        #mapHoverTooltip .tip-name {
+            font-size: 0.90rem;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        #mapHoverTooltip .tip-stat {
+            font-size: 0.76rem;
+            color: #D6E8F6;
+            margin-top: 3px;
+        }
+
+        /* Floating Map Zoom Controls */
+        .map-floating-controls {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 20;
+        }
+
+        .map-btn-icon {
+            width: 38px;
+            height: 38px;
+            background: #FFFFFF;
+            border: 1px solid #D1E3F0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-deep-navy);
+            font-weight: 800;
+            font-size: 1.15rem;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+            transition: all var(--transition-fast);
+        }
+
+        .map-btn-icon:hover {
+            background: var(--color-mist-blue);
+            color: var(--color-primary-blue);
+            transform: translateY(-1px);
+        }
+
+        .map-watermark-badge {
+            position: absolute;
+            bottom: 14px;
+            left: 16px;
+            background: rgba(11, 25, 44, 0.85);
+            backdrop-filter: blur(6px);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.76rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+            pointer-events: none;
+        }
+
+        /* Right Detail Sidebar Card */
+        .sidebar-detail-card {
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-sm);
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sidebar-header-badge {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1.5px solid #EEF2F6;
+            padding-bottom: 14px;
+        }
+
+        .detail-meta {
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: var(--color-primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .detail-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--color-deep-navy);
+            margin-top: 2px;
+        }
+
+        .bgy-number-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--color-primary-blue);
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.05rem;
+            font-weight: 800;
+            box-shadow: 0 3px 8px rgba(7, 89, 152, 0.35);
+        }
+
+        .stats-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-box {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 10px 14px;
+        }
+
+        .stat-box-label {
+            font-size: 0.70rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .stat-box-val {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--color-deep-navy);
+            margin-top: 2px;
+        }
+
+        .winner-banner-box {
+            background: #E0F2FE;
+            border: 1px solid #BAE6FD;
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .winner-banner-text {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #0369A1;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .winner-name-display {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--color-deep-navy);
+            margin-top: 2px;
+        }
+
+        .progress-bar-wrap {
+            margin-top: 6px;
+        }
+
+        .progress-bar-bg {
+            height: 8px;
+            background: #E2E8F0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #51B8E5, #075998);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        /* Candidates Results Breakdown List */
+        .candidates-list-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .candidate-row-card {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .candidate-row-card.is-winner {
+            border-color: #075998;
+            background: #F0F7FC;
+        }
+
+        .c-info-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .c-color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1.5px solid #FFFFFF;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .c-name-label {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: var(--color-deep-navy);
+        }
+
+        .c-vote-count {
+            font-size: 0.86rem;
+            font-weight: 800;
+            color: var(--color-deep-navy);
+            text-align: right;
+        }
+
+        /* 18-Barangay Mini Pill List */
+        .barangay-pills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            max-height: 140px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .bgy-pill-btn {
+            padding: 5px 9px;
+            border-radius: 6px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            background: #F1F5F9;
+            border: 1px solid #E2E8F0;
+            color: var(--color-deep-navy);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .bgy-pill-btn:hover,
+        .bgy-pill-btn.active {
+            background: var(--color-primary-blue);
+            color: #FFFFFF;
+            border-color: var(--color-primary-blue);
+        }
+
+        .bgy-pill-num {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        /* Modal Styles */
+        .modal-backdrop-custom {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 25, 47, 0.75);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-card-custom {
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 620px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--card-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header-custom {
+            padding: 18px 24px;
+            border-bottom: 1px solid #EEF2F6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header-custom h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--color-deep-navy);
+        }
+
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-body-custom {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-group-custom label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--color-deep-navy);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            border: 1.5px solid #D6E4F0;
+            font-size: 0.90rem;
+            font-weight: 600;
+            color: var(--color-deep-navy);
+            outline: none;
+            transition: all var(--transition-fast);
+        }
+
+        .form-control-custom:focus {
+            border-color: var(--color-primary-blue);
+            box-shadow: 0 0 0 3px rgba(7, 89, 152, 0.15);
+        }
+
+        .candidate-input-row {
+            display: grid;
+            grid-template-columns: 1fr 90px 110px 36px;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .btn-add-candidate-row {
+            background: #F1F5F9;
+            border: 1.5px dashed #CBD5E1;
+            border-radius: var(--radius-md);
+            padding: 8px 14px;
+            color: var(--color-primary-blue);
+            font-weight: 700;
+            font-size: 0.82rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-add-candidate-row:hover {
+            background: #E2E8F0;
+            border-color: var(--color-primary-blue);
+        }
+
+        .btn-remove-row {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: none;
+            border-radius: 6px;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 800;
+        }
+
+        .modal-footer-custom {
+            padding: 16px 24px;
+            border-top: 1px solid #EEF2F6;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #F8FAFC;
+        }
+
+        .btn-modal-cancel {
+            background: #FFFFFF;
+            border: 1.5px solid #CBD5E1;
+            padding: 9px 18px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .btn-modal-save {
+            background: var(--color-primary-blue);
+            border: none;
+            padding: 9px 22px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            color: #FFFFFF;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(7, 89, 152, 0.3);
+        }
+
+        .btn-modal-save:hover {
+            background: var(--color-deep-navy);
+        }
+
+        /* Quick Year Suggestion Buttons */
+        .year-quick-suggestions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .year-suggest-chip {
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            color: #1D4ED8;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .year-suggest-chip:hover {
+            background: #DBEAFE;
+        }
+
+        /* Positions Checkboxes Grid */
+        .positions-checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .pos-check-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            padding: 7px 10px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--color-deep-navy);
+            cursor: pointer;
+        }
+
+        .pos-check-label:hover {
+            background: #F1F5F9;
+        }
+
+        .pos-check-label input[type="checkbox"] {
+            cursor: pointer;
+            accent-color: var(--color-primary-blue);
+        }
+
+        /* Toast notification */
+        .floating-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #0B192C;
+            color: #FFFFFF;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--color-wave-cyan);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            animation: slideInToast 0.3s ease;
+        }
+
+        @keyframes slideInToast {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+@endsection
+
+@section('role_badge')
+    <span class="role-badge-pill role-badge-admin">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+        </svg>
+        Admin Mode
+    </span>
+@endsection
+
+@section('content')
+    <!-- 1. Top Controls Bar: Electoral Year Timeline Ribbon + Position & Actions -->
+    <div class="electoral-controls-header">
+        <!-- Row A: Electoral Year Ribbon (Pill/Tab Navigation + Add Future Year Button) -->
+        <div class="electoral-year-bar-row">
+            <div class="year-nav-group">
+                <div class="year-nav-label">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24"
+                        stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                    </svg>
+                    <span>Election Year:</span>
+                </div>
+
+                <!-- Dynamic Year Pills (No Dropdown) -->
+                <div class="year-pills-wrapper" id="yearPillsContainer">
+                    @foreach ($years as $yr)
+                        <button type="button" class="year-pill-btn {{ $yr === $defaultYear ? 'active' : '' }}"
+                            data-year="{{ $yr }}">
+                            <span>{{ $yr }}</span>
+                            @if ((int) $yr > 2025)
+                                <span class="year-tag-future">Future</span>
+                            @endif
+                        </button>
+                    @endforeach
+                </div>
+
+                <!-- Add Future / Custom Year Button -->
+                <button type="button" class="btn-add-year-pill" id="btnOpenAddYearModal"
+                    title="Add Future / Custom Election Year">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24"
+                        stroke-width="2.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span>Add Year</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Row B: Position Selection, Jump to Barangay, and Encode Button -->
+        <div class="controls-sub-row">
+            <div class="filter-controls-group">
+                <!-- Position Selection (Dynamically populated based on Year) -->
+                <div class="filter-item-wrap">
+                    <label for="selectPosition" class="filter-label">Electoral Position</label>
+                    <select id="selectPosition" class="custom-select-input" aria-label="Position">
+                        <!-- Dynamically populated based on active year -->
+                    </select>
+                </div>
+
+                <!-- Jump to Barangay -->
+                <div class="filter-item-wrap">
+                    <label for="selectBarangay" class="filter-label">Jump to Barangay</label>
+                    <select id="selectBarangay" class="custom-select-input" aria-label="Select Barangay">
+                        <option value="">-- Choose Barangay (18) --</option>
+                        @foreach ($barangayNames as $bId => $bName)
+                            <option value="{{ $bId }}">{{ $bId }}. {{ $bName }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <button type="button" class="btn-encode-data" id="btnOpenEncodeModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"
+                        stroke-width="2.2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                    </svg>
+                    Encode / Edit Election Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Dynamic Candidate Legend Strip -->
+    <div class="candidate-legend-strip">
+        <div class="legend-title-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+            </svg>
+            <span>Candidate Legend (<span id="legendPositionLabel">Mayor</span>)</span>
+        </div>
+        <div class="legend-items-container" id="legendItemsContainer">
+            <!-- Injected dynamically via JS -->
+        </div>
+    </div>
+
+    <!-- 3. Main Dashboard: Map Visualizer on Left + Detailed Barangay Results on Right -->
+    <div class="electoral-dashboard-grid">
+        <!-- Map Container -->
+        <div class="map-card-container">
+            <div class="interactive-map-stage" id="mapStage">
+                <!-- Floating Zoom Controls -->
+                <div class="map-floating-controls">
+                    <button type="button" class="map-btn-icon" id="btnZoomIn" title="Zoom In">+</button>
+                    <button type="button" class="map-btn-icon" id="btnZoomOut" title="Zoom Out">&minus;</button>
+                    <button type="button" class="map-btn-icon" id="btnResetZoom" title="Reset View">&#x21bb;</button>
+                </div>
+
+                <!-- Watermark Info -->
+                <div class="map-watermark-badge">
+                    📍 Mariveles Official Map &bull; Colored by Winning Candidate
+                </div>
+
+                <!-- Hover Tooltip -->
+                <div id="mapHoverTooltip">
+                    <div class="tip-name" id="tipName">Barangay Name</div>
+                    <div class="tip-stat" id="tipStat">Registered Voters: 0</div>
+                </div>
+
+                <!-- Client Map Image with Hotspot Pins -->
+                <div class="map-viewport-wrapper" id="mapViewport">
+                    <img src="{{ asset('images/Mariveles-Map.png') }}" alt="Mariveles Bataan Map" class="client-map-img"
+                        id="clientMapImg">
+
+                    <!-- 18 Clickable Hotspot Pins colored by winner -->
+                    <div id="hotspotPinsContainer">
+                        <!-- Injected dynamically via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Sidebar Detail Card -->
+        <div class="sidebar-detail-card">
+            <div class="sidebar-header-badge">
+                <div>
+                    <div class="detail-meta" id="cardYearPositionMeta">2025 Mayor Results</div>
+                    <div class="detail-title" id="cardBgyName">Barangay Name</div>
+                </div>
+                <div class="bgy-number-badge" id="cardNumberBadge">1</div>
+            </div>
+
+            <!-- Registered Voters & Actual Votes -->
+            <div class="stats-grid-2col">
+                <div class="stat-box">
+                    <div class="stat-box-label">Registered Voters</div>
+                    <div class="stat-box-val" id="cardRegisteredVoters">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-label">Actual Votes</div>
+                    <div class="stat-box-val" id="cardActualVotes">0</div>
+                </div>
+            </div>
+
+            <!-- Voter Turnout Percentage -->
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="stat-box-label">Voter Turnout</span>
+                    <strong style="font-size:0.90rem; color:#10B981;" id="cardTurnout">0%</strong>
+                </div>
+                <div class="progress-bar-wrap">
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="cardTurnoutBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Winning Candidate Banner -->
+            <div class="winner-banner-box" id="cardWinnerBox">
+                <div>
+                    <div class="winner-banner-text">🏆 Winning Candidate</div>
+                    <div class="winner-name-display" id="cardWinnerName">Candidate Name</div>
+                </div>
+                <div class="c-vote-count" style="color: #0369A1;" id="cardWinnerVotes">0 votes</div>
+            </div>
+
+            <!-- All Candidates Breakdown List -->
+            <div>
+                <div class="stat-box-label" style="margin-bottom: 8px;">All Candidates Breakdown</div>
+                <div class="candidates-list-wrap" id="cardCandidatesList">
+                    <!-- Injected dynamically via JS -->
+                </div>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid #EEF2F6; margin: 2px 0;">
+
+            <!-- 18 Barangays Mini Quick-Select List -->
+            <div>
+                <div class="stat-box-label" style="margin-bottom: 6px;">All 18 Barangays</div>
+                <div class="barangay-pills-list" id="pillsList">
+                    <!-- Injected dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. MODAL: Add New Election Year (Future / Custom Years) -->
+    <div class="modal-backdrop-custom" id="addYearModalBackdrop">
+        <div class="modal-card-custom" style="max-width: 500px;">
+            <div class="modal-header-custom">
+                <h2>Add New Election Year</h2>
+                <button type="button" class="modal-close-btn" id="btnCloseAddYearModal">&times;</button>
+            </div>
+
+            <form id="addYearForm">
+                @csrf
+                <div class="modal-body-custom">
+                    <div class="form-group-custom">
+                        <label for="inputNewYear">Election Year (e.g. 2028, 2031, 2034)</label>
+                        <input type="number" id="inputNewYear" name="year" class="form-control-custom"
+                            placeholder="2028" min="2000" max="2100" required>
+                        <div class="year-quick-suggestions">
+                            <span style="font-size:0.72rem; color:var(--text-muted); font-weight:700;">Quick Pick:</span>
+                            <button type="button" class="year-suggest-chip" data-suggest="2028">+ 2028</button>
+                            <button type="button" class="year-suggest-chip" data-suggest="2031">+ 2031</button>
+                            <button type="button" class="year-suggest-chip" data-suggest="2034">+ 2034</button>
+                            <button type="button" class="year-suggest-chip" data-suggest="2037">+ 2037</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label for="inputNewYearTitle">Election Title / Description</label>
+                        <input type="text" id="inputNewYearTitle" name="title" class="form-control-custom"
+                            placeholder="e.g. 2028 Presidential & Local Elections">
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label>Electoral Positions to Include</label>
+                        <div class="positions-checklist-grid">
+                            <label class="pos-check-label">
+                                <input type="checkbox" name="positions[]" value="Mayor" checked> Mayor
+                            </label>
+                            <label class="pos-check-label">
+                                <input type="checkbox" name="positions[]" value="Vice Mayor" checked> Vice Mayor
+                            </label>
+                            <label class="pos-check-label">
+                                <input type="checkbox" name="positions[]" value="Governor" checked> Governor
+                            </label>
+                            <label class="pos-check-label">
+                                <input type="checkbox" name="positions[]" value="Congressman" checked> Congressman
+                            </label>
+                            <label class="pos-check-label">
+                                <input type="checkbox" name="positions[]" value="Councilors" checked> Councilors
+                            </label>
+                            <label class="pos-check-label">
+                                <input type="checkbox" name="positions[]" value="Barangay Captain"> Brgy. Captain
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-modal-cancel" id="btnCancelAddYearModal">Cancel</button>
+                    <button type="submit" class="btn-modal-save" id="btnSubmitAddYear">Save to Database &amp;
+                        Open</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. MODAL: Encode / Edit Election Data -->
+    <div class="modal-backdrop-custom" id="encodeModalBackdrop">
+        <div class="modal-card-custom">
+            <div class="modal-header-custom">
+                <h2>Encode / Edit Election Data</h2>
+                <button type="button" class="modal-close-btn" id="btnCloseEncodeModal">&times;</button>
+            </div>
+
+            <form id="encodeDataForm">
+                @csrf
+                <div class="modal-body-custom">
+                    <div class="form-row-2col">
+                        <div class="form-group-custom">
+                            <label for="modalYear">Electoral Year</label>
+                            <select id="modalYear" name="year" class="form-control-custom">
+                                @foreach ($years as $yr)
+                                    <option value="{{ $yr }}">{{ $yr }} Election</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label for="modalPosition">Position</label>
+                            <select id="modalPosition" name="position" class="form-control-custom">
+                                <!-- Filled dynamically -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group-custom">
+                        <label for="modalBarangay">Barangay</label>
+                        <select id="modalBarangay" name="barangay_id" class="form-control-custom">
+                            @foreach ($barangayNames as $bId => $bName)
+                                <option value="{{ $bId }}">{{ $bId }}. {{ $bName }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="form-row-2col">
+                        <div class="form-group-custom">
+                            <label for="modalRegVoters">Total Registered Voters</label>
+                            <input type="number" id="modalRegVoters" name="registered_voters"
+                                class="form-control-custom" min="1" required>
+                        </div>
+
+                        <div class="form-group-custom">
+                            <label for="modalActualVotes">Number of Actual Votes</label>
+                            <input type="number" id="modalActualVotes" name="actual_votes" class="form-control-custom"
+                                min="0" required>
+                        </div>
+                    </div>
+
+                    <hr style="border: none; border-top: 1px solid #EEF2F6; margin: 4px 0;">
+
+                    <div>
+                        <label
+                            style="font-size: 0.78rem; font-weight: 800; color: var(--color-deep-navy); text-transform: uppercase; margin-bottom: 10px; display: block;">
+                            Candidates &amp; Votes Received
+                        </label>
+
+                        <div id="modalCandidatesContainer">
+                            <!-- Candidate rows injected dynamically -->
+                        </div>
+
+                        <button type="button" class="btn-add-candidate-row" id="btnAddCandidateRow">
+                            + Add Another Candidate
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal-footer-custom">
+                    <button type="button" class="btn-modal-cancel" id="btnCancelEncodeModal">Cancel</button>
+                    <button type="submit" class="btn-modal-save" id="btnSubmitEncodeData">Save to Database &amp; Update
+                        Map</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Floating Toast Notification -->
+    <div class="floating-toast" id="floatingToast">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24"
+            stroke-width="2.5" stroke="#10B981">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+        </svg>
+        <span id="toastMessage">Action completed successfully!</span>
+    </div>
+@endsection
+
+@section('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial server-side dataset loaded directly from MySQL Database
+            let fullDataset = @json($initialDataset);
+            let availableYears = @json($years);
+            let positionsByYear = @json($yearPositionsMap);
+
+            // Relative hotspot coordinates on Mariveles-Map.png
+            const pinCoordinates = {
+                1: {
+                    x: 71.0,
+                    y: 47.0
+                },
+                2: {
+                    x: 87.8,
+                    y: 48.0
+                },
+                3: {
+                    x: 63.5,
+                    y: 53.8
+                },
+                4: {
+                    x: 77.8,
+                    y: 54.2
+                },
+                5: {
+                    x: 36.0,
+                    y: 52.5
+                },
+                6: {
+                    x: 53.0,
+                    y: 53.8
+                },
+                7: {
+                    x: 23.5,
+                    y: 56.5
+                },
+                8: {
+                    x: 45.0,
+                    y: 55.2
+                },
+                9: {
+                    x: 78.8,
+                    y: 60.0
+                },
+                10: {
+                    x: 39.0,
+                    y: 60.0
+                },
+                11: {
+                    x: 77.0,
+                    y: 66.0
+                },
+                12: {
+                    x: 68.5,
+                    y: 67.5
+                },
+                13: {
+                    x: 44.5,
+                    y: 67.5
+                },
+                14: {
+                    x: 59.5,
+                    y: 68.5
+                },
+                15: {
+                    x: 51.8,
+                    y: 68.2
+                },
+                16: {
+                    x: 36.8,
+                    y: 72.5
+                },
+                17: {
+                    x: 58.5,
+                    y: 73.5
+                },
+                18: {
+                    x: 41.5,
+                    y: 76.2
+                }
+            };
+
+            const barangayNames = @json($barangayNames);
+
+            // Current State
+            let currentYear = '{{ $defaultYear }}';
+            let currentPosition = '{{ $defaultPosition }}';
+            let selectedBarangayId = 1;
+
+            // DOM Elements
+            const yearPillsContainer = document.getElementById('yearPillsContainer');
+            const selectPosition = document.getElementById('selectPosition');
+            const selectBarangayDropdown = document.getElementById('selectBarangay');
+            const legendPositionLabel = document.getElementById('legendPositionLabel');
+            const legendItemsContainer = document.getElementById('legendItemsContainer');
+            const pinsContainer = document.getElementById('hotspotPinsContainer');
+            const pillsList = document.getElementById('pillsList');
+            const tooltip = document.getElementById('mapHoverTooltip');
+            const tipName = document.getElementById('tipName');
+            const tipStat = document.getElementById('tipStat');
+
+            // Sidebar Elements
+            const cardYearPositionMeta = document.getElementById('cardYearPositionMeta');
+            const cardBgyName = document.getElementById('cardBgyName');
+            const cardNumberBadge = document.getElementById('cardNumberBadge');
+            const cardRegisteredVoters = document.getElementById('cardRegisteredVoters');
+            const cardActualVotes = document.getElementById('cardActualVotes');
+            const cardTurnout = document.getElementById('cardTurnout');
+            const cardTurnoutBar = document.getElementById('cardTurnoutBar');
+            const cardWinnerName = document.getElementById('cardWinnerName');
+            const cardWinnerVotes = document.getElementById('cardWinnerVotes');
+            const cardCandidatesList = document.getElementById('cardCandidatesList');
+
+            // Add Year Modal Elements
+            const addYearModalBackdrop = document.getElementById('addYearModalBackdrop');
+            const btnOpenAddYearModal = document.getElementById('btnOpenAddYearModal');
+            const btnCloseAddYearModal = document.getElementById('btnCloseAddYearModal');
+            const btnCancelAddYearModal = document.getElementById('btnCancelAddYearModal');
+            const addYearForm = document.getElementById('addYearForm');
+            const inputNewYear = document.getElementById('inputNewYear');
+            const inputNewYearTitle = document.getElementById('inputNewYearTitle');
+
+            // Encode Modal Elements
+            const encodeModalBackdrop = document.getElementById('encodeModalBackdrop');
+            const btnOpenEncodeModal = document.getElementById('btnOpenEncodeModal');
+            const btnCloseEncodeModal = document.getElementById('btnCloseEncodeModal');
+            const btnCancelEncodeModal = document.getElementById('btnCancelEncodeModal');
+            const modalYear = document.getElementById('modalYear');
+            const modalPosition = document.getElementById('modalPosition');
+            const modalBarangay = document.getElementById('modalBarangay');
+            const modalRegVoters = document.getElementById('modalRegVoters');
+            const modalActualVotes = document.getElementById('modalActualVotes');
+            const modalCandidatesContainer = document.getElementById('modalCandidatesContainer');
+            const btnAddCandidateRow = document.getElementById('btnAddCandidateRow');
+            const encodeDataForm = document.getElementById('encodeDataForm');
+
+            // Toast helper
+            function showToast(msg) {
+                const toast = document.getElementById('floatingToast');
+                const toastMsg = document.getElementById('toastMessage');
+                toastMsg.textContent = msg;
+                toast.style.display = 'inline-flex';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 3500);
+            }
+
+            // Render Year Pills (Ribbon Navigation)
+            function renderYearPills() {
+                yearPillsContainer.innerHTML = '';
+                availableYears.forEach(yr => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `year-pill-btn ${yr === currentYear ? 'active' : ''}`;
+                    btn.dataset.year = yr;
+
+                    let futureTag = '';
+                    if (Number(yr) > 2025) {
+                        futureTag = '<span class="year-tag-future">Future</span>';
+                    }
+
+                    btn.innerHTML = `<span>${yr}</span>${futureTag}`;
+                    btn.addEventListener('click', () => {
+                        setYear(yr);
+                    });
+                    yearPillsContainer.appendChild(btn);
+                });
+
+                // Also update the select in the encode modal
+                modalYear.innerHTML = '';
+                availableYears.forEach(yr => {
+                    const opt = document.createElement('option');
+                    opt.value = yr;
+                    opt.textContent = `${yr} Election`;
+                    if (yr === currentYear) opt.selected = true;
+                    modalYear.appendChild(opt);
+                });
+            }
+
+            // Switch Selected Year
+            function setYear(yr) {
+                currentYear = yr;
+                document.querySelectorAll('.year-pill-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.year === yr);
+                });
+
+                populatePositions(currentYear, selectPosition);
+                currentPosition = selectPosition.value;
+                refreshDashboard();
+            }
+
+            // Populate Position dropdown based on Year
+            function populatePositions(year, targetSelect, selectedPos = null) {
+                targetSelect.innerHTML = '';
+                const posList = positionsByYear[year] || ['Mayor', 'Vice Mayor', 'Governor', 'Congressman',
+                    'Councilors'
+                ];
+                posList.forEach(pos => {
+                    const opt = document.createElement('option');
+                    opt.value = pos;
+                    opt.textContent = pos;
+                    if (selectedPos && selectedPos === pos) {
+                        opt.selected = true;
+                    }
+                    targetSelect.appendChild(opt);
+                });
+            }
+
+            // Refresh Map, Legend & Sidebar
+            function refreshDashboard() {
+                const yearData = fullDataset[currentYear] || {};
+                const positionData = yearData[currentPosition] || {};
+
+                legendPositionLabel.textContent = `${currentYear} ${currentPosition}`;
+                cardYearPositionMeta.textContent = `${currentYear} ${currentPosition} Election`;
+
+                // 1. Calculate Candidates Totals & Barangays Won for Legend
+                const candidateStats = {};
+                for (let bgyId = 1; bgyId <= 18; bgyId++) {
+                    const bgy = positionData[bgyId];
+                    if (!bgy) continue;
+
+                    // Tally candidate totals
+                    (bgy.candidates || []).forEach(c => {
+                        if (!candidateStats[c.name]) {
+                            candidateStats[c.name] = {
+                                name: c.name,
+                                color: c.color,
+                                totalVotes: 0,
+                                bgysWon: 0
+                            };
+                        }
+                        candidateStats[c.name].totalVotes += (c.votes || 0);
+                    });
+
+                    // Tally winner barangay
+                    if (bgy.winner_name && candidateStats[bgy.winner_name]) {
+                        candidateStats[bgy.winner_name].bgysWon += 1;
+                    }
+                }
+
+                // Render Legend
+                legendItemsContainer.innerHTML = '';
+                const sortedCandidates = Object.values(candidateStats).sort((a, b) => b.totalVotes - a.totalVotes);
+                if (sortedCandidates.length === 0) {
+                    legendItemsContainer.innerHTML =
+                        '<span style="font-size:0.78rem; color:var(--text-muted);">No candidate data encoded for this election yet.</span>';
+                } else {
+                    sortedCandidates.forEach(c => {
+                        const badge = document.createElement('div');
+                        badge.className = 'legend-candidate-badge';
+                        badge.innerHTML = `
+                            <span class="legend-color-dot" style="background:${c.color};"></span>
+                            <span>${c.name}</span>
+                            <span style="font-weight:800; color:var(--color-primary-blue);">${Number(c.totalVotes).toLocaleString()} votes</span>
+                            <span class="legend-win-tag">${c.bgysWon}/18 Bgys</span>
+                        `;
+                        legendItemsContainer.appendChild(badge);
+                    });
+                }
+
+                // 2. Render 18 Hotspot Pins with Winning Candidate Colors
+                pinsContainer.innerHTML = '';
+                for (let bgyId = 1; bgyId <= 18; bgyId++) {
+                    const bgy = positionData[bgyId] || {
+                        barangay_id: bgyId,
+                        barangay_name: barangayNames[bgyId],
+                        winner_color: '#075998',
+                        winner_name: 'Pending',
+                        registered_voters: 0,
+                        actual_votes: 0,
+                        turnout_percentage: 0
+                    };
+
+                    const coords = pinCoordinates[bgyId] || {
+                        x: 50,
+                        y: 50
+                    };
+                    const pin = document.createElement('div');
+                    pin.className = 'map-hotspot-pin';
+                    pin.id = `hotspot-pin-${bgyId}`;
+                    pin.style.left = `${coords.x}%`;
+                    pin.style.top = `${coords.y}%`;
+                    pin.style.backgroundColor = bgy.winner_color || '#075998';
+                    pin.textContent = bgyId;
+
+                    if (bgyId === selectedBarangayId) {
+                        pin.classList.add('active-selected');
+                    }
+
+                    // Hover Tooltip
+                    pin.addEventListener('mouseenter', function(e) {
+                        tipName.textContent = `${bgyId}. Brgy. ${barangayNames[bgyId]}`;
+                        tipStat.textContent =
+                            `Winner: ${bgy.winner_name} | Turnout: ${bgy.turnout_percentage || 0}%`;
+                        tooltip.style.display = 'block';
+                    });
+
+                    pin.addEventListener('mousemove', function(e) {
+                        const rect = document.getElementById('mapStage').getBoundingClientRect();
+                        tooltip.style.left = (e.clientX - rect.left) + 'px';
+                        tooltip.style.top = (e.clientY - rect.top) + 'px';
+                    });
+
+                    pin.addEventListener('mouseleave', function() {
+                        tooltip.style.display = 'none';
+                    });
+
+                    // Click to Select
+                    pin.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        selectBarangay(bgyId);
+                    });
+
+                    pinsContainer.appendChild(pin);
+                }
+
+                // 3. Render Sidebar Pills
+                renderPills(positionData);
+
+                // 4. Update Sidebar Details for Selected Barangay
+                renderSidebarDetails(selectedBarangayId);
+            }
+
+            function renderPills(positionData) {
+                pillsList.innerHTML = '';
+                for (let bgyId = 1; bgyId <= 18; bgyId++) {
+                    const bgy = positionData[bgyId] || {};
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `bgy-pill-btn ${bgyId === selectedBarangayId ? 'active' : ''}`;
+                    btn.id = `pill-bgy-${bgyId}`;
+                    btn.innerHTML =
+                        `<span class="bgy-pill-num" style="background:${bgy.winner_color || '#075998'};">${bgyId}</span> ${barangayNames[bgyId]}`;
+                    btn.addEventListener('click', () => selectBarangay(bgyId));
+                    pillsList.appendChild(btn);
+                }
+            }
+
+            function selectBarangay(bgyId) {
+                selectedBarangayId = Number(bgyId);
+
+                // Highlight Pin
+                document.querySelectorAll('.map-hotspot-pin').forEach(p => p.classList.remove('active-selected'));
+                const targetPin = document.getElementById(`hotspot-pin-${bgyId}`);
+                if (targetPin) targetPin.classList.add('active-selected');
+
+                // Highlight Pill
+                document.querySelectorAll('.bgy-pill-btn').forEach(p => p.classList.remove('active'));
+                const targetPill = document.getElementById(`pill-bgy-${bgyId}`);
+                if (targetPill) targetPill.classList.add('active');
+
+                // Sync Jump Dropdown
+                if (selectBarangayDropdown) selectBarangayDropdown.value = bgyId;
+
+                // Update Sidebar Details
+                renderSidebarDetails(bgyId);
+            }
+
+            function renderSidebarDetails(bgyId) {
+                const yearData = fullDataset[currentYear] || {};
+                const positionData = yearData[currentPosition] || {};
+                const bgy = positionData[bgyId] || {
+                    barangay_id: bgyId,
+                    barangay_name: barangayNames[bgyId],
+                    registered_voters: 0,
+                    actual_votes: 0,
+                    turnout_percentage: 0,
+                    winner_name: 'No Data',
+                    winner_color: '#075998',
+                    winner_votes: 0,
+                    candidates: []
+                };
+
+                cardBgyName.textContent = `Brgy. ${barangayNames[bgyId]}`;
+                cardNumberBadge.textContent = bgyId;
+                cardNumberBadge.style.backgroundColor = bgy.winner_color || '#075998';
+
+                cardRegisteredVoters.textContent = Number(bgy.registered_voters || 0).toLocaleString();
+                cardActualVotes.textContent = Number(bgy.actual_votes || 0).toLocaleString();
+
+                const turnout = bgy.turnout_percentage || 0;
+                cardTurnout.textContent = `${turnout}%`;
+                cardTurnoutBar.style.width = `${Math.min(100, turnout)}%`;
+
+                cardWinnerName.textContent = bgy.winner_name || 'None';
+                cardWinnerVotes.textContent = `${Number(bgy.winner_votes || 0).toLocaleString()} votes`;
+
+                // Render Candidates Breakdown List
+                cardCandidatesList.innerHTML = '';
+                const sortedCandidates = [...(bgy.candidates || [])].sort((a, b) => b.votes - a.votes);
+
+                if (sortedCandidates.length === 0) {
+                    cardCandidatesList.innerHTML =
+                        '<div style="font-size:0.80rem; color:var(--text-muted); padding:6px 0;">No candidates encoded yet. Click "Encode / Edit" to enter candidate votes.</div>';
+                } else {
+                    sortedCandidates.forEach((c, idx) => {
+                        const isWinner = (idx === 0 && (c.votes || 0) > 0);
+                        const pct = (bgy.actual_votes > 0) ? Math.round((c.votes / bgy.actual_votes) *
+                            100) : 0;
+                        const row = document.createElement('div');
+                        row.className = `candidate-row-card ${isWinner ? 'is-winner' : ''}`;
+                        row.innerHTML = `
+                            <div class="c-info-group">
+                                <span class="c-color-dot" style="background:${c.color};"></span>
+                                <div>
+                                    <div class="c-name-label">${c.name} ${isWinner ? '🏆' : ''}</div>
+                                    <div style="font-size:0.70rem; color:var(--text-muted);">${pct}% of actual votes</div>
+                                </div>
+                            </div>
+                            <div class="c-vote-count">${Number(c.votes).toLocaleString()}</div>
+                        `;
+                        cardCandidatesList.appendChild(row);
+                    });
+                }
+            }
+
+            // Position & Barangay Dropdown Event Listeners
+            selectPosition.addEventListener('change', function() {
+                currentPosition = this.value;
+                refreshDashboard();
+            });
+
+            if (selectBarangayDropdown) {
+                selectBarangayDropdown.addEventListener('change', function() {
+                    if (this.value) {
+                        selectBarangay(this.value);
+                    }
+                });
+            }
+
+            // Map Drag & Zoom Controls
+            let currentScale = 1;
+            let panX = 0,
+                panY = 0;
+            let isPanning = false;
+            let startX = 0,
+                startY = 0;
+            const mapStage = document.getElementById('mapStage');
+            const mapViewport = document.getElementById('mapViewport');
+
+            function updateTransform() {
+                mapViewport.style.transform = `translate(${panX}px, ${panY}px) scale(${currentScale})`;
+            }
+
+            document.getElementById('btnZoomIn').addEventListener('click', () => {
+                currentScale = Math.min(3.0, currentScale + 0.25);
+                updateTransform();
+            });
+
+            document.getElementById('btnZoomOut').addEventListener('click', () => {
+                currentScale = Math.max(0.75, currentScale - 0.25);
+                updateTransform();
+            });
+
+            document.getElementById('btnResetZoom').addEventListener('click', () => {
+                currentScale = 1;
+                panX = 0;
+                panY = 0;
+                updateTransform();
+            });
+
+            mapStage.addEventListener('mousedown', function(e) {
+                if (e.target.closest('.map-btn-icon') || e.target.closest('.map-hotspot-pin')) return;
+                isPanning = true;
+                startX = e.clientX - panX;
+                startY = e.clientY - panY;
+                mapStage.classList.add('dragging');
+            });
+
+            window.addEventListener('mousemove', function(e) {
+                if (!isPanning) return;
+                panX = e.clientX - startX;
+                panY = e.clientY - startY;
+                updateTransform();
+            });
+
+            window.addEventListener('mouseup', function() {
+                isPanning = false;
+                mapStage.classList.remove('dragging');
+            });
+
+            // ==========================================
+            // MODAL A: ADD NEW ELECTION YEAR (DATABASE)
+            // ==========================================
+            function openAddYearModal() {
+                // Calculate next election year suggestion (e.g., 2028 if max is 2025)
+                const numericYears = availableYears.map(y => parseInt(y, 10)).filter(n => !isNaN(n));
+                const maxYear = numericYears.length > 0 ? Math.max(...numericYears) : 2025;
+                const nextYear = maxYear < 2025 ? 2028 : (maxYear + 3);
+
+                inputNewYear.value = nextYear;
+                inputNewYearTitle.value = `${nextYear} National & Local Elections`;
+                addYearModalBackdrop.style.display = 'flex';
+            }
+
+            function closeAddYearModal() {
+                addYearModalBackdrop.style.display = 'none';
+            }
+
+            btnOpenAddYearModal.addEventListener('click', openAddYearModal);
+            btnCloseAddYearModal.addEventListener('click', closeAddYearModal);
+            btnCancelAddYearModal.addEventListener('click', closeAddYearModal);
+
+            // Quick suggestions chips
+            document.querySelectorAll('.year-suggest-chip').forEach(chip => {
+                chip.addEventListener('click', function() {
+                    const val = this.dataset.suggest;
+                    inputNewYear.value = val;
+                    inputNewYearTitle.value = `${val} National & Local Elections`;
+                });
+            });
+
+            // Submit Add Year Form
+            addYearForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const yr = inputNewYear.value.trim();
+                const title = inputNewYearTitle.value.trim();
+                const checkedPositions = [];
+                addYearForm.querySelectorAll('input[name="positions[]"]:checked').forEach(chk => {
+                    checkedPositions.push(chk.value);
+                });
+
+                if (!yr) {
+                    alert('Please enter a valid election year.');
+                    return;
+                }
+
+                if (checkedPositions.length === 0) {
+                    alert('Please select at least one position.');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('btnSubmitAddYear');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving to Database...';
+
+                fetch("{{ route('admin.electoral.add_year') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            year: yr,
+                            title: title,
+                            positions: checkedPositions
+                        })
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Save to Database & Open';
+
+                        if (res.success) {
+                            // Add year to available list if not present
+                            if (!availableYears.includes(yr)) {
+                                availableYears.push(yr);
+                                availableYears.sort((a, b) => parseInt(a) - parseInt(b));
+                            }
+
+                            // Store positions map & dataset
+                            positionsByYear[yr] = res.positions || checkedPositions;
+                            if (res.dataset && res.dataset[yr]) {
+                                fullDataset[yr] = res.dataset[yr];
+                            } else if (!fullDataset[yr]) {
+                                fullDataset[yr] = {};
+                            }
+
+                            // Re-render year pills
+                            renderYearPills();
+
+                            // Switch to newly created year
+                            setYear(yr);
+
+                            closeAddYearModal();
+                            showToast(`Election Year ${yr} created in Database successfully!`);
+                        } else {
+                            alert(res.message || 'Failed to add election year.');
+                        }
+                    })
+                    .catch(err => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Save to Database & Open';
+                        console.error("Add Year error:", err);
+                        alert("Error communicating with database. Please try again.");
+                    });
+            });
+
+            // ==========================================
+            // MODAL B: ENCODE / EDIT ELECTION DATA (DATABASE)
+            // ==========================================
+            function openEncodeModal() {
+                modalYear.value = currentYear;
+                populatePositions(currentYear, modalPosition, currentPosition);
+                modalBarangay.value = selectedBarangayId;
+
+                populateModalFields();
+                encodeModalBackdrop.style.display = 'flex';
+            }
+
+            function closeEncodeModal() {
+                encodeModalBackdrop.style.display = 'none';
+            }
+
+            btnOpenEncodeModal.addEventListener('click', openEncodeModal);
+            btnCloseEncodeModal.addEventListener('click', closeEncodeModal);
+            btnCancelEncodeModal.addEventListener('click', closeEncodeModal);
+
+            modalYear.addEventListener('change', function() {
+                populatePositions(this.value, modalPosition);
+                populateModalFields();
+            });
+
+            modalPosition.addEventListener('change', populateModalFields);
+            modalBarangay.addEventListener('change', populateModalFields);
+
+            function populateModalFields() {
+                const yr = modalYear.value;
+                const pos = modalPosition.value;
+                const bId = modalBarangay.value;
+
+                const yrData = fullDataset[yr] || {};
+                const posData = yrData[pos] || {};
+                const bData = posData[bId] || {
+                    registered_voters: 5500,
+                    actual_votes: 4500,
+                    candidates: [{
+                            name: 'Candidate 1',
+                            color: '#075998',
+                            votes: 2500
+                        },
+                        {
+                            name: 'Candidate 2',
+                            color: '#E53935',
+                            votes: 2000
+                        }
+                    ]
+                };
+
+                modalRegVoters.value = bData.registered_voters || 5500;
+                modalActualVotes.value = bData.actual_votes || 4500;
+
+                modalCandidatesContainer.innerHTML = '';
+                const candidates = bData.candidates || [];
+                if (candidates.length === 0) {
+                    addCandidateRow('Candidate 1', '#075998', 0);
+                    addCandidateRow('Candidate 2', '#E53935', 0);
+                } else {
+                    candidates.forEach(c => addCandidateRow(c.name, c.color, c.votes));
+                }
+            }
+
+            function addCandidateRow(name = '', color = '#075998', votes = 0) {
+                const row = document.createElement('div');
+                row.className = 'candidate-input-row';
+                row.innerHTML = `
+                    <input type="text" class="form-control-custom c-name-input" placeholder="Candidate Full Name" value="${name}" required>
+                    <input type="color" class="form-control-custom c-color-input" value="${color}" style="height:42px; padding:2px; cursor:pointer;">
+                    <input type="number" class="form-control-custom c-votes-input" placeholder="Votes" value="${votes}" min="0" required>
+                    <button type="button" class="btn-remove-row" title="Remove">&times;</button>
+                `;
+
+                row.querySelector('.btn-remove-row').addEventListener('click', function() {
+                    if (modalCandidatesContainer.children.length > 1) {
+                        row.remove();
+                    } else {
+                        alert('You must have at least one candidate record.');
+                    }
+                });
+
+                modalCandidatesContainer.appendChild(row);
+            }
+
+            btnAddCandidateRow.addEventListener('click', function() {
+                const defaultColors = ['#075998', '#E53935', '#2E7D32', '#FF9800', '#8E24AA', '#2196F3'];
+                const count = modalCandidatesContainer.children.length;
+                const pickColor = defaultColors[count % defaultColors.length];
+                addCandidateRow('', pickColor, 0);
+            });
+
+            // Submit & Save Data via AJAX to MySQL Database
+            encodeDataForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const yr = modalYear.value;
+                const pos = modalPosition.value;
+                const bId = Number(modalBarangay.value);
+                const regVoters = Number(modalRegVoters.value);
+                const actualVotes = Number(modalActualVotes.value);
+
+                const candidatesPayload = [];
+                const rows = modalCandidatesContainer.querySelectorAll('.candidate-input-row');
+                rows.forEach(r => {
+                    const cName = r.querySelector('.c-name-input').value.trim();
+                    const cColor = r.querySelector('.c-color-input').value;
+                    const cVotes = Number(r.querySelector('.c-votes-input').value) || 0;
+                    if (cName) {
+                        candidatesPayload.push({
+                            name: cName,
+                            color: cColor,
+                            votes: cVotes
+                        });
+                    }
+                });
+
+                if (candidatesPayload.length === 0) {
+                    alert('Please provide at least one candidate with a name.');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('btnSubmitEncodeData');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving to Database...';
+
+                fetch("{{ route('admin.electoral.save_data') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            year: yr,
+                            position: pos,
+                            barangay_id: bId,
+                            registered_voters: regVoters,
+                            actual_votes: actualVotes,
+                            candidates: candidatesPayload
+                        })
+                    })
+                    .then(r => r.json())
+                    .then(res => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Save to Database & Update Map';
+
+                        if (res.success) {
+                            // Update local dataset
+                            if (!fullDataset[yr]) fullDataset[yr] = {};
+                            if (!fullDataset[yr][pos]) fullDataset[yr][pos] = {};
+                            fullDataset[yr][pos][bId] = res.updated_record;
+
+                            // Switch view to saved data
+                            currentYear = yr;
+                            renderYearPills();
+                            populatePositions(yr, selectPosition, pos);
+                            currentPosition = pos;
+                            selectedBarangayId = bId;
+
+                            closeEncodeModal();
+                            refreshDashboard();
+                            showToast(`Brgy. ${barangayNames[bId]} data saved to Database!`);
+                        } else {
+                            alert(res.message || 'Failed to save electoral data.');
+                        }
+                    })
+                    .catch(err => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Save to Database & Update Map';
+                        console.error("Save error:", err);
+                        alert("Error saving data to database. Please check connection.");
+                    });
+            });
+
+            // Initialize Dashboard
+            renderYearPills();
+            populatePositions(currentYear, selectPosition, currentPosition);
+            refreshDashboard();
+            selectBarangay(1);
+        });
+    </script>
+@endsection

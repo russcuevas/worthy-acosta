@@ -1,0 +1,477 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 1,
+        "name": "Alion",
+        "color": "#F39C12",
+        "voters": 5840,
+        "precincts": 8,
+        "leading": "Maria Santos",
+        "turnout": "84.2%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.530, 14.505],
+            [120.565, 14.508],
+            [120.605, 14.500],
+            [120.628, 14.492],
+            [120.605, 14.478],
+            [120.565, 14.482],
+            [120.535, 14.488],
+            [120.530, 14.505]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 2,
+        "name": "Batangas II",
+        "color": "#3498DB",
+        "voters": 6920,
+        "precincts": 10,
+        "leading": "Juan Dela Cruz",
+        "turnout": "88.1%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.628, 14.492],
+            [120.650, 14.488],
+            [120.648, 14.455],
+            [120.618, 14.460],
+            [120.605, 14.478],
+            [120.628, 14.492]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 3,
+        "name": "Cabcaben",
+        "color": "#2ECC71",
+        "voters": 12450,
+        "precincts": 16,
+        "leading": "Pedro Reyes",
+        "turnout": "86.5%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.515, 14.502],
+            [120.530, 14.505],
+            [120.535, 14.488],
+            [120.565, 14.482],
+            [120.605, 14.478],
+            [120.618, 14.460],
+            [120.585, 14.455],
+            [120.545, 14.460],
+            [120.518, 14.475],
+            [120.515, 14.502]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 4,
+        "name": "Lucanin",
+        "color": "#9B59B6",
+        "voters": 4610,
+        "precincts": 6,
+        "leading": "Elena Gomez",
+        "turnout": "82.9%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.585, 14.455],
+            [120.618, 14.460],
+            [120.648, 14.455],
+            [120.638, 14.438],
+            [120.575, 14.445],
+            [120.585, 14.455]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 5,
+        "name": "Balon-Anito",
+        "color": "#E74C3C",
+        "voters": 8100,
+        "precincts": 11,
+        "leading": "Carlos Mendoza",
+        "turnout": "85.7%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.455, 14.508],
+            [120.472, 14.508],
+            [120.465, 14.472],
+            [120.445, 14.465],
+            [120.435, 14.485],
+            [120.455, 14.508]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 6,
+        "name": "Maligaya",
+        "color": "#E67E22",
+        "voters": 7430,
+        "precincts": 9,
+        "leading": "Maria Santos",
+        "turnout": "87.0%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.490, 14.508],
+            [120.515, 14.502],
+            [120.518, 14.475],
+            [120.545, 14.460],
+            [120.528, 14.440],
+            [120.502, 14.448],
+            [120.490, 14.478],
+            [120.490, 14.508]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 7,
+        "name": "Biaan",
+        "color": "#1ABC9C",
+        "voters": 3200,
+        "precincts": 5,
+        "leading": "Juan Dela Cruz",
+        "turnout": "80.4%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.355, 14.470],
+            [120.375, 14.492],
+            [120.410, 14.508],
+            [120.455, 14.508],
+            [120.435, 14.485],
+            [120.445, 14.465],
+            [120.428, 14.452],
+            [120.400, 14.442],
+            [120.370, 14.448],
+            [120.355, 14.470]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 8,
+        "name": "Malaya",
+        "color": "#D35400",
+        "voters": 5350,
+        "precincts": 7,
+        "leading": "Elena Gomez",
+        "turnout": "83.5%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.472, 14.508],
+            [120.490, 14.508],
+            [120.490, 14.478],
+            [120.502, 14.448],
+            [120.480, 14.445],
+            [120.465, 14.472],
+            [120.472, 14.508]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 9,
+        "name": "Townsite",
+        "color": "#2980B9",
+        "voters": 6780,
+        "precincts": 9,
+        "leading": "Carlos Mendoza",
+        "turnout": "89.2%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.575, 14.445],
+            [120.638, 14.438],
+            [120.628, 14.420],
+            [120.590, 14.428],
+            [120.565, 14.435],
+            [120.575, 14.445]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 10,
+        "name": "San Isidro",
+        "color": "#27AE60",
+        "voters": 4910,
+        "precincts": 6,
+        "leading": "Pedro Reyes",
+        "turnout": "81.6%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.445, 14.465],
+            [120.465, 14.472],
+            [120.480, 14.445],
+            [120.465, 14.432],
+            [120.438, 14.438],
+            [120.428, 14.452],
+            [120.445, 14.465]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 11,
+        "name": "Mt. View",
+        "color": "#8E44AD",
+        "voters": 7890,
+        "precincts": 10,
+        "leading": "Maria Santos",
+        "turnout": "86.8%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.565, 14.435],
+            [120.590, 14.428],
+            [120.628, 14.420],
+            [120.612, 14.402],
+            [120.560, 14.415],
+            [120.565, 14.435]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 12,
+        "name": "Alas-Asin",
+        "color": "#FF5722",
+        "voters": 14200,
+        "precincts": 18,
+        "leading": "Juan Dela Cruz",
+        "turnout": "91.3%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.528, 14.440],
+            [120.545, 14.460],
+            [120.585, 14.455],
+            [120.575, 14.445],
+            [120.565, 14.435],
+            [120.560, 14.415],
+            [120.612, 14.402],
+            [120.595, 14.385],
+            [120.545, 14.390],
+            [120.525, 14.418],
+            [120.528, 14.440]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 13,
+        "name": "Camaya",
+        "color": "#00BCD4",
+        "voters": 6120,
+        "precincts": 8,
+        "leading": "Maria Santos",
+        "turnout": "84.9%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.465, 14.432],
+            [120.480, 14.445],
+            [120.488, 14.432],
+            [120.468, 14.422],
+            [120.465, 14.432]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 14,
+        "name": "Baseco Country",
+        "color": "#FF9800",
+        "voters": 5410,
+        "precincts": 7,
+        "leading": "Carlos Mendoza",
+        "turnout": "85.2%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.515, 14.432],
+            [120.525, 14.418],
+            [120.545, 14.390],
+            [120.530, 14.385],
+            [120.505, 14.408],
+            [120.515, 14.432]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 15,
+        "name": "San Carlos",
+        "color": "#4CAF50",
+        "voters": 4820,
+        "precincts": 6,
+        "leading": "Elena Gomez",
+        "turnout": "83.1%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.488, 14.432],
+            [120.502, 14.448],
+            [120.528, 14.440],
+            [120.515, 14.432],
+            [120.505, 14.408],
+            [120.485, 14.420],
+            [120.488, 14.432]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 16,
+        "name": "Poblacion",
+        "color": "#E91E63",
+        "voters": 9850,
+        "precincts": 13,
+        "leading": "Juan Dela Cruz",
+        "turnout": "89.8%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.438, 14.438],
+            [120.465, 14.432],
+            [120.468, 14.422],
+            [120.485, 14.420],
+            [120.470, 14.405],
+            [120.432, 14.415],
+            [120.438, 14.438]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 17,
+        "name": "Sisiman",
+        "color": "#009688",
+        "voters": 5100,
+        "precincts": 7,
+        "leading": "Pedro Reyes",
+        "turnout": "87.4%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.505, 14.408],
+            [120.530, 14.385],
+            [120.522, 14.370],
+            [120.498, 14.378],
+            [120.505, 14.408]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": 18,
+        "name": "Ipag",
+        "color": "#673AB7",
+        "voters": 6730,
+        "precincts": 9,
+        "leading": "Maria Santos",
+        "turnout": "86.1%"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [120.432, 14.415],
+            [120.470, 14.405],
+            [120.485, 14.420],
+            [120.505, 14.408],
+            [120.498, 14.378],
+            [120.472, 14.352],
+            [120.448, 14.358],
+            [120.422, 14.382],
+            [120.432, 14.415]
+          ]
+        ]
+      }
+    }
+  ]
+}

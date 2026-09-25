@@ -21,6 +21,9 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .header-title-bar-row {
@@ -140,6 +143,8 @@
             padding: 3px;
             border-radius: 20px;
             border: 1px solid #E2E8F0;
+            flex-wrap: wrap;
+            max-width: 100%;
         }
 
         .status-pill-btn {
@@ -334,6 +339,9 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .legend-title-group {
@@ -386,6 +394,9 @@
             gap: 22px;
             align-items: start;
             margin-bottom: 24px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         @media (max-width: 1100px) {
@@ -404,6 +415,9 @@
             position: relative;
             display: flex;
             flex-direction: column;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .interactive-map-stage {
@@ -544,8 +558,8 @@
         /* Floating Map Zoom Controls */
         .map-floating-controls {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            top: 16px;
+            right: 16px;
             display: flex;
             flex-direction: column;
             gap: 6px;
@@ -585,6 +599,9 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .sidebar-header-badge {
@@ -992,11 +1009,18 @@
             box-shadow: var(--shadow-sm);
             padding: 22px;
             margin-bottom: 24px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .table-responsive {
             width: 100%;
+            max-width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            display: block;
         }
 
         .table-nav-ribbon {
@@ -1040,6 +1064,8 @@
             font-family: inherit;
             color: var(--color-deep-navy);
             font-size: 0.84rem;
+            width: 100%;
+            max-width: 100%;
         }
 
         .dataTables_wrapper .dataTables_length {
@@ -1542,6 +1568,313 @@
         @keyframes slideInUp {
             from { transform: translateY(100%); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ================= Responsive Breakpoints (Matches Electoral Module) ================= */
+        @media (max-width: 1100px) {
+            .electoral-dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .events-controls-header {
+                padding: 16px 20px;
+                gap: 14px;
+            }
+
+            .header-title-bar-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .header-actions-right {
+                width: 100%;
+            }
+
+            .header-actions-right .btn-encode-data {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filter-controls-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .filter-left-group {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+                gap: 12px;
+            }
+
+            .filter-item {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .filter-item .filter-select,
+            .filter-item .filter-input {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .classification-pill-group {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .status-pill-btn {
+                flex: 1 1 auto;
+                text-align: center;
+                justify-content: center;
+            }
+
+            .btn-reset-filters {
+                align-self: flex-start;
+                margin-top: 4px;
+            }
+
+            .interactive-map-stage {
+                height: 480px;
+                min-height: 400px;
+            }
+
+            .client-map-img {
+                max-height: 440px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .map-legend-bar-container {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 14px 16px;
+                gap: 10px;
+            }
+
+            .legend-items-container {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .metric-pill-btn {
+                padding: 6px 12px;
+                font-size: 0.76rem;
+            }
+
+            .interactive-map-stage {
+                height: 380px;
+                min-height: 300px;
+            }
+
+            .client-map-img {
+                max-height: 340px;
+            }
+
+            .section-header-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .section-header-title {
+                flex-wrap: wrap;
+            }
+
+            .table-card-container {
+                padding: 16px;
+            }
+
+            .table-nav-ribbon {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .table-tab-buttons {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .tab-btn {
+                flex: 1 1 auto;
+                text-align: center;
+                padding: 6px 10px;
+                font-size: 0.78rem;
+            }
+
+            /* Responsive DataTables Layout */
+            .dataTables_wrapper .dataTables_length,
+            .dataTables_wrapper .dataTables_filter {
+                float: none !important;
+                width: 100% !important;
+                text-align: left !important;
+                margin-bottom: 10px !important;
+            }
+
+            .dataTables_wrapper .dataTables_filter {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 6px !important;
+            }
+
+            .dataTables_wrapper .dataTables_filter input {
+                width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+            }
+
+            .dataTables_wrapper .dataTables_info {
+                float: none !important;
+                text-align: center !important;
+                padding-top: 10px !important;
+                margin-bottom: 6px !important;
+            }
+
+            .dataTables_wrapper .dataTables_paginate {
+                float: none !important;
+                width: 100% !important;
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+                gap: 4px !important;
+                padding-top: 8px !important;
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button {
+                padding: 4px 8px !important;
+                font-size: 0.76rem !important;
+                margin: 1px !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .events-controls-header {
+                padding: 14px 16px;
+            }
+
+            .header-title-left h1 {
+                font-size: 1.15rem;
+            }
+
+            .header-title-left p {
+                font-size: 0.76rem;
+            }
+
+            .upcoming-event-card {
+                padding: 14px;
+            }
+
+            .event-card-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .btn-mark-past {
+                width: 100%;
+                justify-content: center;
+                padding: 8px 12px;
+                font-size: 0.80rem;
+            }
+
+            .event-card-actions > div:last-child {
+                display: flex;
+                justify-content: flex-end;
+                width: 100%;
+            }
+
+            /* Responsive Modals */
+            .modal-backdrop-custom {
+                padding: 12px;
+            }
+
+            .modal-box-card {
+                max-height: 94vh;
+                margin: 0;
+                border-radius: var(--radius-md);
+            }
+
+            .modal-header-custom {
+                padding: 14px 18px;
+            }
+
+            .modal-body-custom {
+                padding: 16px 18px;
+            }
+
+            .modal-footer-custom {
+                padding: 14px 18px;
+                flex-direction: column-reverse;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .btn-modal-cancel,
+            .btn-modal-submit {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .choice-buttons-grid {
+                grid-template-columns: 1fr !important;
+                gap: 8px;
+            }
+
+            .choice-btn {
+                padding: 10px 14px;
+            }
+
+            .form-grid-2col {
+                grid-template-columns: 1fr !important;
+                gap: 12px;
+            }
+
+            .form-col-span-2 {
+                grid-column: span 1 !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .interactive-map-stage {
+                height: 320px;
+                min-height: 270px;
+            }
+
+            .client-map-img {
+                max-height: 270px;
+            }
+
+            .stats-grid-2col {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .sidebar-detail-card {
+                padding: 16px;
+            }
+
+            .kpi-card {
+                padding: 14px 16px;
+            }
+
+            .kpi-value {
+                font-size: 1.6rem;
+            }
+
+            .kpi-subtext {
+                font-size: 0.74rem;
+            }
         }
     </style>
 @endsection

@@ -21,6 +21,9 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .header-title-bar-row {
@@ -139,6 +142,8 @@
             background: #F1F5F9;
             padding: 4px;
             border-radius: 10px;
+            flex-wrap: wrap;
+            max-width: 100%;
         }
 
         .date-pill-opt {
@@ -172,6 +177,9 @@
             flex-wrap: wrap;
             gap: 14px;
             box-shadow: var(--shadow-sm);
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .legend-title-wrap {
@@ -228,6 +236,9 @@
             gap: 22px;
             align-items: start;
             margin-bottom: 24px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         @media (max-width: 1100px) {
@@ -246,6 +257,9 @@
             position: relative;
             display: flex;
             flex-direction: column;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .interactive-map-stage {
@@ -450,6 +464,9 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .sidebar-header-badge {
@@ -648,6 +665,10 @@
             border: 1px solid var(--card-border);
             box-shadow: var(--shadow-sm);
             padding: 22px 24px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
         }
 
         .records-header-row {
@@ -674,11 +695,16 @@
         /* Detailed Records Table Custom DataTables Styling */
         .records-table-responsive {
             width: 100%;
+            max-width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            display: block;
         }
 
         /* Custom DataTables Wrapper Layout */
         .dataTables_wrapper {
+            width: 100%;
+            max-width: 100%;
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: var(--color-deep-navy);
         }
@@ -1083,6 +1109,250 @@
             to {
                 transform: translateY(0);
                 opacity: 1;
+            }
+        }
+
+        /* ================= Responsive Breakpoints (Matches Electoral Module) ================= */
+        @media (max-width: 1100px) {
+            .electoral-dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .assistance-controls-header {
+                padding: 16px 20px;
+                gap: 14px;
+            }
+
+            .header-title-bar-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .header-actions-right {
+                width: 100%;
+            }
+
+            .header-actions-right .btn-encode-data {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .filter-controls-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .filter-left-group {
+                flex-direction: column;
+                align-items: stretch;
+                width: 100%;
+                gap: 12px;
+            }
+
+            .filter-item-wrap {
+                width: 100%;
+            }
+
+            .custom-select-input {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .date-pills-wrap {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+
+            .date-pill-opt {
+                flex: 1 1 auto;
+                text-align: center;
+                padding: 6px 10px;
+                font-size: 0.74rem;
+            }
+
+            .btn-reset-filters {
+                align-self: flex-start;
+                margin-top: 4px;
+            }
+
+            .interactive-map-stage {
+                height: 480px;
+                min-height: 400px;
+            }
+
+            .client-map-img {
+                max-height: 440px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .candidate-legend-strip {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 14px 16px;
+                gap: 10px;
+            }
+
+            .legend-items-container {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+
+            .metric-pill-btn {
+                padding: 6px 12px;
+                font-size: 0.76rem;
+            }
+
+            .interactive-map-stage {
+                height: 380px;
+                min-height: 300px;
+            }
+
+            .client-map-img {
+                max-height: 340px;
+            }
+
+            .records-card-section {
+                padding: 16px;
+            }
+
+            .records-header-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            /* Responsive DataTables Layout */
+            .dataTables_wrapper .dataTables_length,
+            .dataTables_wrapper .dataTables_filter {
+                float: none !important;
+                width: 100% !important;
+                text-align: left !important;
+                margin-bottom: 10px !important;
+            }
+
+            .dataTables_wrapper .dataTables_filter {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 6px !important;
+            }
+
+            .dataTables_wrapper .dataTables_filter input {
+                width: 100% !important;
+                min-width: 0 !important;
+                margin-left: 0 !important;
+            }
+
+            .dataTables_wrapper .dataTables_info {
+                float: none !important;
+                text-align: center !important;
+                padding-top: 10px !important;
+                margin-bottom: 6px !important;
+            }
+
+            .dataTables_wrapper .dataTables_paginate {
+                float: none !important;
+                width: 100% !important;
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+                gap: 4px !important;
+                padding-top: 8px !important;
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button {
+                padding: 4px 8px !important;
+                font-size: 0.76rem !important;
+                margin: 1px !important;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .assistance-controls-header {
+                padding: 14px 16px;
+            }
+
+            .header-title-left h1 {
+                font-size: 1.15rem;
+            }
+
+            .header-title-left p {
+                font-size: 0.76rem;
+            }
+
+            /* Responsive Modals */
+            .modal-backdrop-custom {
+                padding: 12px;
+            }
+
+            .modal-box-card {
+                max-height: 94vh;
+                margin: 0;
+                border-radius: var(--radius-md);
+            }
+
+            .modal-header-custom {
+                padding: 14px 18px;
+            }
+
+            .modal-body-custom {
+                padding: 16px 18px;
+            }
+
+            .modal-footer-custom {
+                padding: 14px 18px;
+                flex-direction: column-reverse;
+                align-items: stretch;
+                gap: 8px;
+            }
+
+            .btn-modal-cancel,
+            .btn-modal-save {
+                width: 100%;
+                justify-content: center;
+                text-align: center;
+            }
+
+            .form-grid-2col {
+                grid-template-columns: 1fr !important;
+                gap: 12px;
+            }
+
+            .form-col-span-2 {
+                grid-column: span 1 !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .interactive-map-stage {
+                height: 320px;
+                min-height: 270px;
+            }
+
+            .client-map-img {
+                max-height: 270px;
+            }
+
+            .barangay-pills-list {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid-2col {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .sidebar-detail-card {
+                padding: 16px;
             }
         }
     </style>

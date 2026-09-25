@@ -1182,7 +1182,7 @@
 
                 <!-- Client Map Image with Hotspot Pins -->
                 <div class="map-viewport-wrapper" id="mapViewport">
-                    <img src="{{ asset('images/Map.jpg') }}" alt="Mariveles Bataan Map" class="client-map-img"
+                    <img src="{{ asset('images/mariveles-map.png') }}" alt="Mariveles Bataan Map" class="client-map-img"
                         id="clientMapImg">
 
                     <!-- 18 Clickable Hotspot Pins colored by winner -->
@@ -1507,7 +1507,7 @@
             let availableYears = @json($years);
             let positionsByYear = @json($yearPositionsMap);
 
-            // Relative hotspot coordinates aligned with numbers 1-18 on Map.jpg
+            // Relative hotspot coordinates aligned with numbers 1-18 on mariveles-map.png
             const pinCoordinates = {
                 1: {
                     x: 71.0,

@@ -1225,7 +1225,7 @@
 
                 <!-- Client Map Image with Hotspot Pins (Identical Structure) -->
                 <div class="map-viewport-wrapper" id="mapViewport">
-                    <img src="{{ asset('images/Map.jpg') }}" alt="Mariveles Bataan Map" class="client-map-img"
+                    <img src="{{ asset('images/mariveles-map.png') }}" alt="Mariveles Bataan Map" class="client-map-img"
                         id="clientMapImg">
 
                     <!-- 18 Clickable Hotspot Pins -->

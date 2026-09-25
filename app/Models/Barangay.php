@@ -38,5 +38,13 @@ class Barangay extends Model
     {
         return $this->hasMany(Assistance::class, 'barangay_id', 'id');
     }
+
+    /**
+     * Get events for this barangay.
+     */
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'barangay_id', 'id');
+    }
 }
 

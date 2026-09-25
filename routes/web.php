@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ElectoralDataController as AdminElectoralDataController;
 use App\Http\Controllers\Admin\AssistanceController as AdminAssistanceController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Assistant\DashboardController as AssistantDashboardController;
 
 // Authentication routes
@@ -44,6 +45,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/delete/{id}', [AdminAssistanceController::class, 'destroy'])->name('delete');
         Route::get('/export', [AdminAssistanceController::class, 'exportCsv'])->name('export');
     });
+
+    // Events Module
+    Route::prefix('events')->name('events.')->group(function () {
+        Route::get('/', [AdminEventController::class, 'index'])->name('index');
+        Route::get('/data', [AdminEventController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminEventController::class, 'store'])->name('store');
+        Route::get('/record/{id}', [AdminEventController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminEventController::class, 'update'])->name('update');
+        Route::post('/mark-past/{id}', [AdminEventController::class, 'markPast'])->name('mark_past');
+        Route::post('/delete/{id}', [AdminEventController::class, 'destroy'])->name('delete');
+        Route::get('/export', [AdminEventController::class, 'exportCsv'])->name('export');
+    });
 });
 
 // Assistant routes
@@ -65,5 +78,17 @@ Route::prefix('assistant')->name('assistant.')->group(function () {
         Route::post('/update/{id}', [AdminAssistanceController::class, 'update'])->name('update');
         Route::post('/delete/{id}', [AdminAssistanceController::class, 'destroy'])->name('delete');
         Route::get('/export', [AdminAssistanceController::class, 'exportCsv'])->name('export');
+    });
+
+    // Events Module
+    Route::prefix('events')->name('events.')->group(function () {
+        Route::get('/', [AdminEventController::class, 'index'])->name('index');
+        Route::get('/data', [AdminEventController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminEventController::class, 'store'])->name('store');
+        Route::get('/record/{id}', [AdminEventController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminEventController::class, 'update'])->name('update');
+        Route::post('/mark-past/{id}', [AdminEventController::class, 'markPast'])->name('mark_past');
+        Route::post('/delete/{id}', [AdminEventController::class, 'destroy'])->name('delete');
+        Route::get('/export', [AdminEventController::class, 'exportCsv'])->name('export');
     });
 });

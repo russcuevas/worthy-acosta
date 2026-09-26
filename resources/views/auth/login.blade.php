@@ -36,12 +36,6 @@
                     <p class="auth-role-desc" id="roleDisplayLabel">Administrator Portal Access</p>
                 </div>
 
-                <!-- Role Selector Tabs -->
-                <div class="auth-role-switch">
-                    <button type="button" class="role-tab-btn active" id="roleAdminBtn">Admin</button>
-                    <button type="button" class="role-tab-btn" id="roleAssistantBtn">Assistant</button>
-                </div>
-
                 <form action="{{ route('authenticate') }}" method="POST" class="auth-form-body">
                     @csrf
                     <input type="hidden" name="role" id="roleInput" value="admin">

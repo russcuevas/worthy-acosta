@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             DirectorySeeder::class,
             IssueSeeder::class,
             SurveySeeder::class,
+            DemographySeeder::class,
         ]);
     }
 }

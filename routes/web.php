@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AssistanceController as AdminAssistanceController
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\DirectoryController as AdminDirectoryController;
 use App\Http\Controllers\Admin\IssueController as AdminIssueController;
+use App\Http\Controllers\Admin\DemographyController as AdminDemographyController;
 use App\Http\Controllers\Admin\SurveyController as AdminSurveyController;
 use App\Http\Controllers\Assistant\DashboardController as AssistantDashboardController;
 
@@ -83,6 +84,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/export', [AdminIssueController::class, 'exportCsv'])->name('export');
     });
 
+    // Demography Module
+    Route::prefix('demography')->name('demography.')->group(function () {
+        Route::get('/', [AdminDemographyController::class, 'index'])->name('index');
+        Route::get('/data', [AdminDemographyController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminDemographyController::class, 'store'])->name('store');
+        Route::get('/record/{id}', [AdminDemographyController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminDemographyController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [AdminDemographyController::class, 'destroy'])->name('delete');
+        Route::post('/sector/store', [AdminDemographyController::class, 'storeSector'])->name('sector.store');
+        Route::post('/sector/update/{id}', [AdminDemographyController::class, 'updateSector'])->name('sector.update');
+        Route::post('/sector/delete/{id}', [AdminDemographyController::class, 'destroySector'])->name('sector.delete');
+    });
+
     // Survey Module
     Route::prefix('survey')->name('survey.')->group(function () {
         Route::get('/', [AdminSurveyController::class, 'index'])->name('index');
@@ -150,6 +164,19 @@ Route::prefix('assistant')->name('assistant.')->group(function () {
         Route::post('/update/{id}', [AdminIssueController::class, 'update'])->name('update');
         Route::post('/delete/{id}', [AdminIssueController::class, 'destroy'])->name('delete');
         Route::get('/export', [AdminIssueController::class, 'exportCsv'])->name('export');
+    });
+
+    // Demography Module
+    Route::prefix('demography')->name('demography.')->group(function () {
+        Route::get('/', [AdminDemographyController::class, 'index'])->name('index');
+        Route::get('/data', [AdminDemographyController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminDemographyController::class, 'store'])->name('store');
+        Route::get('/record/{id}', [AdminDemographyController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminDemographyController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [AdminDemographyController::class, 'destroy'])->name('delete');
+        Route::post('/sector/store', [AdminDemographyController::class, 'storeSector'])->name('sector.store');
+        Route::post('/sector/update/{id}', [AdminDemographyController::class, 'updateSector'])->name('sector.update');
+        Route::post('/sector/delete/{id}', [AdminDemographyController::class, 'destroySector'])->name('sector.delete');
     });
 
     // Survey Module

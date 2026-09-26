@@ -46,5 +46,13 @@ class Barangay extends Model
     {
         return $this->hasMany(Event::class, 'barangay_id', 'id');
     }
+
+    /**
+     * Get directory contacts for this barangay.
+     */
+    public function directories()
+    {
+        return $this->hasMany(Directory::class, 'barangay_id', 'id');
+    }
 }
 

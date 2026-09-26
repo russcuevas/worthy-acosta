@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             BarangaySeeder::class,
             ElectoralDataSeeder::class,
             AssistanceSeeder::class,
+            EventSeeder::class,
+            DirectorySeeder::class,
         ]);
     }
 }

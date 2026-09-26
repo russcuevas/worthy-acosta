@@ -1,64 +1,53 @@
-Developer Description and Data Structure
+Directory Module
+Updated Developer Description and Data Structure
 
-Purpose. The Events Module will record, organize, monitor, and summarize events by barangay. It should serve both
-as a planning tool for upcoming events and as a historical database for past events.
-1. Event Status
-Before encoding the event details, staff should choose one of two classifications:
-1. Upcoming Event
-2. Past Event
-2. Event Data Entry
+Purpose. The Directory Module is a centralized, searchable contact directory organized by barangay and contact
+type. It allows authorized staff to maintain contact records and view aggregate directory counts by barangay.
+1. Directory Data Entry
 Field Description
-Event Status Upcoming or Past
-Barangay Barangay where the event will be or was held
-Event Name Name/title of the event
-Date and Time Scheduled or actual event date and time
-Venue Location of the event
-Type of Event Municipal Event, Barangay Event, Sectoral, Political, Others
-Who Invited Person, organization, office, group, or official who invited
-Contact Information Contact person, mobile number, email, or other contact details
-Details Description and important information about the event
-Request Any request made by the organizer
-Speech Yes or No
-Theme Official event theme, if applicable
-Number of Attendees Expected number of attendees
-Total Number Who Attended Actual attendance after the event
-3. Upcoming Events
-For upcoming events, the dashboard should emphasize the date and time, venue, barangay, who invited, contact
-information, request, whether a speech is required, and expected number of attendees. If Speech = YES, the
-dashboard should display a visible SPEECH REQUIRED indicator so staff can prepare the message in advance.
-Recommended optional attendance status: Confirmed / Tentative / Declined / For Confirmation.
-4. Past Events
-After an event has taken place, staff should be able to change its status from Upcoming to Past and encode the Total
-Number Who Attended. The original expected attendance should remain stored so the system can compare
-expected versus actual attendance.
+Barangay Select the barangay associated with the contact.
+Type of Contact Sectoral, Barangay Officials, Neighborhood Association, Coordinator, Leader, Supporter, Others.
+Name Full name of the contact.
+Position Position, designation, role, or title.
+Contact Number Primary contact/mobile number.
+Other Info Additional relevant notes or directory information.
+Internal Label Saint, Sinner, or Savable. User-defined internal category.
+2. Internal Label Display
+The module may include three user-defined internal directory labels. These labels are stored as administrative
+categories without the system assigning a political meaning or persuasion score.
+Label Display Color System Description
+Saint Blue User-defined internal directory category.
+Sinner Green User-defined internal directory category.
+Savable Yellow User-defined internal directory category.
+3. Barangay Directory Summary
+When a barangay is clicked, the dashboard should show the total number of directory records and the breakdown by
+contact type. It may also display aggregate counts of records carrying each internal label.
+Summary Metric Example
+Total Contacts 207
+Saint label count 95
+Sinner label count 62
+Savable label count 50
+Sectoral 18
+Barangay Officials 12
+Neighborhood Associations 9
+Coordinators 15
 
-5. Events Summary per Barangay
-Clicking a barangay on the map should automatically generate an events summary for that barangay:
-Metric Example
-Total Events 48
-Upcoming Events 7
-Past Events 41
-Expected Attendees 6,500
-Actual Attendees 7,230
-6. Breakdown by Event Type
-Event Type No. of Events Actual Attendance
-Municipal 8 1,850
-Barangay 15 2,600
-Sectoral 12 1,480
-Political 9 1,100
-Others 4 200
-TOTAL 48 7,230
-7. Map and Filtering
-The Mariveles map should be interactive. Clicking a barangay should show Total Events, Upcoming Events, Past
-Events, Total Actual Attendance, and the list of events associated with that barangay. Users should be able to switch
-between All Events / Upcoming / Past and filter by Date Range / Event Type / Barangay.
-8. Overall Dashboard
-At the municipal level, the main summary cards should show:
-TOTAL EVENTS | UPCOMING | PAST | TOTAL ATTENDANCE
-Below the summary cards, the recommended layout is an interactive Map of Mariveles together with an Upcoming
-Events Calendar/List.
-9. Core Data Logic
-Event Status -> Barangay -> Event Information -> Invitation/Contact -> Request -> Speech/Theme -> Expected
-Attendance -> Actual Attendance
-The system then automatically produces an Events Summary per Barangay, including total events, upcoming and
-past event counts, attendance totals, and breakdowns by event type.
+Leaders 25
+Supporters 120
+Others 8
+4. Search and Filtering
+The directory should be searchable by Name, Position, Contact Type, and Barangay. Authorized staff can filter by
+contact type. Individual records can be opened for viewing or updating.
+5. Map Behavior
+When Directory is selected, the Mariveles barangay map remains interactive. Clicking a barangay opens its directory
+summary and contact list. The map visualization should use neutral operational measures such as total directory
+records, contact-type distribution, or directory completeness, rather than automatically interpreting the internal
+labels as political support or targeting signals.
+6. Core Data Logic
+Barangay -> Type of Contact -> Name -> Position -> Contact Number -> Other Info -> Internal Label
+The dashboard can automatically generate Total Contacts per Barangay + Breakdown by Contact Type +
+Aggregate Internal Label Counts + Searchable Directory.
+7. Privacy and Access
+Because the directory contains names, contact numbers, notes, and internal labels, access should be restricted to
+authorized staff. The system should maintain an audit trail showing who created or edited a record and should not
+expose personal contact information or internal labels on a public-facing dashboard.

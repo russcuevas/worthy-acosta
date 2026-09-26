@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ElectoralDataController as AdminElectoralDataController;
 use App\Http\Controllers\Admin\AssistanceController as AdminAssistanceController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
+use App\Http\Controllers\Admin\DirectoryController as AdminDirectoryController;
 use App\Http\Controllers\Assistant\DashboardController as AssistantDashboardController;
 
 // Authentication routes
@@ -57,6 +58,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/delete/{id}', [AdminEventController::class, 'destroy'])->name('delete');
         Route::get('/export', [AdminEventController::class, 'exportCsv'])->name('export');
     });
+
+    // Directory Module
+    Route::prefix('directory')->name('directory.')->group(function () {
+        Route::get('/', [AdminDirectoryController::class, 'index'])->name('index');
+        Route::get('/data', [AdminDirectoryController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminDirectoryController::class, 'store'])->name('store');
+        Route::get('/record/{id}', [AdminDirectoryController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminDirectoryController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [AdminDirectoryController::class, 'destroy'])->name('delete');
+        Route::get('/export', [AdminDirectoryController::class, 'exportCsv'])->name('export');
+    });
 });
 
 // Assistant routes
@@ -90,5 +102,16 @@ Route::prefix('assistant')->name('assistant.')->group(function () {
         Route::post('/mark-past/{id}', [AdminEventController::class, 'markPast'])->name('mark_past');
         Route::post('/delete/{id}', [AdminEventController::class, 'destroy'])->name('delete');
         Route::get('/export', [AdminEventController::class, 'exportCsv'])->name('export');
+    });
+
+    // Directory Module
+    Route::prefix('directory')->name('directory.')->group(function () {
+        Route::get('/', [AdminDirectoryController::class, 'index'])->name('index');
+        Route::get('/data', [AdminDirectoryController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminDirectoryController::class, 'store'])->name('store');
+        Route::get('/record/{id}', [AdminDirectoryController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminDirectoryController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [AdminDirectoryController::class, 'destroy'])->name('delete');
+        Route::get('/export', [AdminDirectoryController::class, 'exportCsv'])->name('export');
     });
 });

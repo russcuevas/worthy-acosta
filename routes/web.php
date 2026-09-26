@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AssistanceController as AdminAssistanceController
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\DirectoryController as AdminDirectoryController;
 use App\Http\Controllers\Admin\IssueController as AdminIssueController;
+use App\Http\Controllers\Admin\SurveyController as AdminSurveyController;
 use App\Http\Controllers\Assistant\DashboardController as AssistantDashboardController;
 
 // Authentication routes
@@ -81,6 +82,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/delete/{id}', [AdminIssueController::class, 'destroy'])->name('delete');
         Route::get('/export', [AdminIssueController::class, 'exportCsv'])->name('export');
     });
+
+    // Survey Module
+    Route::prefix('survey')->name('survey.')->group(function () {
+        Route::get('/', [AdminSurveyController::class, 'index'])->name('index');
+        Route::get('/data', [AdminSurveyController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminSurveyController::class, 'store'])->name('store');
+        Route::post('/period/store', [AdminSurveyController::class, 'storePeriod'])->name('period.store');
+        Route::get('/record/{id}', [AdminSurveyController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminSurveyController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [AdminSurveyController::class, 'destroy'])->name('delete');
+        Route::post('/period/delete/{id}', [AdminSurveyController::class, 'destroyPeriod'])->name('period.delete');
+        Route::get('/export', [AdminSurveyController::class, 'exportCsv'])->name('export');
+    });
 });
 
 // Assistant routes
@@ -136,5 +150,18 @@ Route::prefix('assistant')->name('assistant.')->group(function () {
         Route::post('/update/{id}', [AdminIssueController::class, 'update'])->name('update');
         Route::post('/delete/{id}', [AdminIssueController::class, 'destroy'])->name('delete');
         Route::get('/export', [AdminIssueController::class, 'exportCsv'])->name('export');
+    });
+
+    // Survey Module
+    Route::prefix('survey')->name('survey.')->group(function () {
+        Route::get('/', [AdminSurveyController::class, 'index'])->name('index');
+        Route::get('/data', [AdminSurveyController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminSurveyController::class, 'store'])->name('store');
+        Route::post('/period/store', [AdminSurveyController::class, 'storePeriod'])->name('period.store');
+        Route::get('/record/{id}', [AdminSurveyController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminSurveyController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [AdminSurveyController::class, 'destroy'])->name('delete');
+        Route::post('/period/delete/{id}', [AdminSurveyController::class, 'destroyPeriod'])->name('period.delete');
+        Route::get('/export', [AdminSurveyController::class, 'exportCsv'])->name('export');
     });
 });

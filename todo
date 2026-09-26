@@ -1,52 +1,62 @@
-Issues Module
+Demography Module
 Developer Description and Data Structure
 
-Purpose. The Issues Module will record, organize, monitor, and geographically display important concerns affecting
-individual barangays or the municipality as a whole. It should allow staff to identify the nature of an issue, who is
-affected, where it is occurring, and its current status.
-1. Issue Data Entry
+Purpose. The Demography Module will provide a barangay-level demographic view of important community sectors.
+It will allow staff to record the estimated or validated number of members belonging to each sector in every barangay.
+The main objective is to help users understand the potential population affected or served when planning a program
+for a particular sector.
+1. Demographic Data Entry
 Field Description
-Barangay Select the barangay affected by the issue. Allow multiple barangays where applicable.
-Type of Issue Political, Community, Municipal-Wide, Policy, Infrastructure.
-Issue Title or concise description of the specific issue.
-Who Are Affected Individuals, groups, sectors, communities, or areas affected by the issue.
-Other Details Background, explanation, developments, concerns, and other relevant information.
-Status (Recommended) New, Ongoing, For Action, Resolved.
-Date Reported (Recommended) Date the issue was first reported or encoded.
-Priority (Recommended) Low, Medium, High, Urgent.
-2. Municipal-Wide Issues
-If an issue affects the entire municipality, staff should be able to select Municipal-Wide / All Barangays. This avoids
-encoding the same issue separately for every barangay while still allowing the issue to appear when individual
-barangays are viewed.
-3. Barangay Issue Summary
-When a barangay is clicked on the map, the dashboard should automatically summarize all issues associated with
-that barangay.
-Summary Metric Example
-Total Issues 12
-Political 2
-Community 4
-Municipal-Wide 1
-Policy 2
-Infrastructure 3
-4. Detailed Issue List
-Type Issue Who Are Affected Other Details
-Infrastructure Damaged Road Residents and motorists Road requires rehabilitation
-Community Water Supply 350 households Intermittent water supply
+Barangay Select the barangay for which demographic information is being encoded.
+Sector Select the applicable community sector.
+Number of Members Enter the number of members belonging to the selected sector in that barangay.
+2. Initial Sector Options
+Sector
+Fishermen
+Farmers
+Factory Workers
+Entrepreneurs
+Senior Citizens
+Youth
+Teachers
+Important: The sector list must be configurable. Authorized users should have an Add Sector function so new
+sectors can be added to the dropdown without requiring changes to the source code. Existing sectors should also be
+manageable by an administrator.
+3. Barangay Demographic View
+When a barangay is clicked on the Mariveles map, the system should display the number of members recorded for
+each sector in that barangay.
+Sector Members
+Fishermen 420
+Farmers 185
+Factory Workers 3,250
+Entrepreneurs 610
+Senior Citizens 1,150
+Youth 2,800
+Teachers 240
 
-Type Issue Who Are Affected Other Details
-Policy New Regulation Local vendors Implementation concerns
-5. Map Function
-When Issues is selected from the main dashboard, the Mariveles map should remain interactive. The map can
-visually represent the number of recorded issues per barangay. Clicking a barangay should open its issue
-summary and detailed issue records.
-6. Filters
-Users should be able to filter the module by All Issues, Political, Community, Municipal-Wide, Policy,
-Infrastructure. If the recommended fields are implemented, additional filters should include Status, Priority, and
-Date Range.
-7. Core Data Logic
-Barangay -> Type of Issue -> Issue -> Who Are Affected -> Other Details -> Status -> Date Reported -> Priority
-The dashboard automatically generates Total Issues per Barangay + Breakdown by Issue Type + Breakdown by
-Status + Detailed Issue List.
-8. Recommended Dashboard Summary
-At the municipal level, the Issues dashboard may display summary cards for Total Issues, Ongoing Issues, For
-Action, Resolved, and Urgent Issues, followed by the interactive Mariveles map and the detailed issue table.
+4. Sector-Based Map View
+The user should also be able to select a specific sector from the dashboard. Once a sector is selected, the map
+should show the number of members belonging to that sector in each barangay. This gives the user a geographic
+view of where a sector is concentrated across Mariveles.
+Example: If the user selects Fishermen, each barangay can display its fishermen count. If the user selects Senior
+Citizens, the same map refreshes to show senior-citizen counts by barangay.
+5. Program Planning Use
+The demographic information is intended to support program planning. When planning a program for a particular
+sector, the user can select that sector and immediately see the approximate number of people who may be affected
+or potentially served in each barangay.
+For example, a program intended for farmers can be viewed together with the number of farmers recorded in every
+barangay. This provides a demographic reference for estimating program reach. The demographic count should be
+treated as the recorded sector population, not automatically as the number of actual program beneficiaries.
+6. Municipal-Wide Sector Summary
+In addition to barangay-level figures, the system should automatically total the number of members in each sector
+across all barangays. This provides both a Barangay View and a Municipal-Wide View.
+7. Recommended Filters
+Recommended filters are Barangay / All Barangays and Sector / All Sectors. Selecting a filter should immediately
+refresh the map, sector counts, and demographic summary.
+8. Core Data Logic
+Barangay -> Sector -> Number of Members
+The dashboard automatically generates Sector Population per Barangay + Total Sector Population
+Municipality-Wide + Sector Distribution Across Barangays.
+9. Recommended Data Management
+Because demographic counts may change, the developer should allow authorized staff to update the number of
+members. A Last Updated date is recommended so users can identify how current each demographic figure is.

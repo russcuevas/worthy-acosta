@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             EventSeeder::class,
             DirectorySeeder::class,
             IssueSeeder::class,
+            SurveySeeder::class,
         ]);
     }
 }

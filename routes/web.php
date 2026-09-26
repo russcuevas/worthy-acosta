@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ElectoralDataController as AdminElectoralDataCont
 use App\Http\Controllers\Admin\AssistanceController as AdminAssistanceController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\DirectoryController as AdminDirectoryController;
+use App\Http\Controllers\Admin\IssueController as AdminIssueController;
 use App\Http\Controllers\Assistant\DashboardController as AssistantDashboardController;
 
 // Authentication routes
@@ -69,6 +70,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/delete/{id}', [AdminDirectoryController::class, 'destroy'])->name('delete');
         Route::get('/export', [AdminDirectoryController::class, 'exportCsv'])->name('export');
     });
+
+    // Issues Module
+    Route::prefix('issues')->name('issues.')->group(function () {
+        Route::get('/', [AdminIssueController::class, 'index'])->name('index');
+        Route::get('/data', [AdminIssueController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminIssueController::class, 'store'])->name('store');
+        Route::get('/record/{id}', [AdminIssueController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminIssueController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [AdminIssueController::class, 'destroy'])->name('delete');
+        Route::get('/export', [AdminIssueController::class, 'exportCsv'])->name('export');
+    });
 });
 
 // Assistant routes
@@ -113,5 +125,16 @@ Route::prefix('assistant')->name('assistant.')->group(function () {
         Route::post('/update/{id}', [AdminDirectoryController::class, 'update'])->name('update');
         Route::post('/delete/{id}', [AdminDirectoryController::class, 'destroy'])->name('delete');
         Route::get('/export', [AdminDirectoryController::class, 'exportCsv'])->name('export');
+    });
+
+    // Issues Module
+    Route::prefix('issues')->name('issues.')->group(function () {
+        Route::get('/', [AdminIssueController::class, 'index'])->name('index');
+        Route::get('/data', [AdminIssueController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminIssueController::class, 'store'])->name('store');
+        Route::get('/record/{id}', [AdminIssueController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminIssueController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [AdminIssueController::class, 'destroy'])->name('delete');
+        Route::get('/export', [AdminIssueController::class, 'exportCsv'])->name('export');
     });
 });

@@ -1,53 +1,52 @@
-Directory Module
-Updated Developer Description and Data Structure
+Issues Module
+Developer Description and Data Structure
 
-Purpose. The Directory Module is a centralized, searchable contact directory organized by barangay and contact
-type. It allows authorized staff to maintain contact records and view aggregate directory counts by barangay.
-1. Directory Data Entry
+Purpose. The Issues Module will record, organize, monitor, and geographically display important concerns affecting
+individual barangays or the municipality as a whole. It should allow staff to identify the nature of an issue, who is
+affected, where it is occurring, and its current status.
+1. Issue Data Entry
 Field Description
-Barangay Select the barangay associated with the contact.
-Type of Contact Sectoral, Barangay Officials, Neighborhood Association, Coordinator, Leader, Supporter, Others.
-Name Full name of the contact.
-Position Position, designation, role, or title.
-Contact Number Primary contact/mobile number.
-Other Info Additional relevant notes or directory information.
-Internal Label Saint, Sinner, or Savable. User-defined internal category.
-2. Internal Label Display
-The module may include three user-defined internal directory labels. These labels are stored as administrative
-categories without the system assigning a political meaning or persuasion score.
-Label Display Color System Description
-Saint Blue User-defined internal directory category.
-Sinner Green User-defined internal directory category.
-Savable Yellow User-defined internal directory category.
-3. Barangay Directory Summary
-When a barangay is clicked, the dashboard should show the total number of directory records and the breakdown by
-contact type. It may also display aggregate counts of records carrying each internal label.
+Barangay Select the barangay affected by the issue. Allow multiple barangays where applicable.
+Type of Issue Political, Community, Municipal-Wide, Policy, Infrastructure.
+Issue Title or concise description of the specific issue.
+Who Are Affected Individuals, groups, sectors, communities, or areas affected by the issue.
+Other Details Background, explanation, developments, concerns, and other relevant information.
+Status (Recommended) New, Ongoing, For Action, Resolved.
+Date Reported (Recommended) Date the issue was first reported or encoded.
+Priority (Recommended) Low, Medium, High, Urgent.
+2. Municipal-Wide Issues
+If an issue affects the entire municipality, staff should be able to select Municipal-Wide / All Barangays. This avoids
+encoding the same issue separately for every barangay while still allowing the issue to appear when individual
+barangays are viewed.
+3. Barangay Issue Summary
+When a barangay is clicked on the map, the dashboard should automatically summarize all issues associated with
+that barangay.
 Summary Metric Example
-Total Contacts 207
-Saint label count 95
-Sinner label count 62
-Savable label count 50
-Sectoral 18
-Barangay Officials 12
-Neighborhood Associations 9
-Coordinators 15
+Total Issues 12
+Political 2
+Community 4
+Municipal-Wide 1
+Policy 2
+Infrastructure 3
+4. Detailed Issue List
+Type Issue Who Are Affected Other Details
+Infrastructure Damaged Road Residents and motorists Road requires rehabilitation
+Community Water Supply 350 households Intermittent water supply
 
-Leaders 25
-Supporters 120
-Others 8
-4. Search and Filtering
-The directory should be searchable by Name, Position, Contact Type, and Barangay. Authorized staff can filter by
-contact type. Individual records can be opened for viewing or updating.
-5. Map Behavior
-When Directory is selected, the Mariveles barangay map remains interactive. Clicking a barangay opens its directory
-summary and contact list. The map visualization should use neutral operational measures such as total directory
-records, contact-type distribution, or directory completeness, rather than automatically interpreting the internal
-labels as political support or targeting signals.
-6. Core Data Logic
-Barangay -> Type of Contact -> Name -> Position -> Contact Number -> Other Info -> Internal Label
-The dashboard can automatically generate Total Contacts per Barangay + Breakdown by Contact Type +
-Aggregate Internal Label Counts + Searchable Directory.
-7. Privacy and Access
-Because the directory contains names, contact numbers, notes, and internal labels, access should be restricted to
-authorized staff. The system should maintain an audit trail showing who created or edited a record and should not
-expose personal contact information or internal labels on a public-facing dashboard.
+Type Issue Who Are Affected Other Details
+Policy New Regulation Local vendors Implementation concerns
+5. Map Function
+When Issues is selected from the main dashboard, the Mariveles map should remain interactive. The map can
+visually represent the number of recorded issues per barangay. Clicking a barangay should open its issue
+summary and detailed issue records.
+6. Filters
+Users should be able to filter the module by All Issues, Political, Community, Municipal-Wide, Policy,
+Infrastructure. If the recommended fields are implemented, additional filters should include Status, Priority, and
+Date Range.
+7. Core Data Logic
+Barangay -> Type of Issue -> Issue -> Who Are Affected -> Other Details -> Status -> Date Reported -> Priority
+The dashboard automatically generates Total Issues per Barangay + Breakdown by Issue Type + Breakdown by
+Status + Detailed Issue List.
+8. Recommended Dashboard Summary
+At the municipal level, the Issues dashboard may display summary cards for Total Issues, Ongoing Issues, For
+Action, Resolved, and Urgent Issues, followed by the interactive Mariveles map and the detailed issue table.

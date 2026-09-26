@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             AssistanceSeeder::class,
             EventSeeder::class,
             DirectorySeeder::class,
+            IssueSeeder::class,
         ]);
     }
 }

@@ -54,5 +54,13 @@ class Barangay extends Model
     {
         return $this->hasMany(Directory::class, 'barangay_id', 'id');
     }
+
+    /**
+     * Get issues associated with this barangay.
+     */
+    public function issues()
+    {
+        return $this->belongsToMany(Issue::class, 'issue_barangay');
+    }
 }
 

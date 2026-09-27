@@ -155,4 +155,24 @@ class AuthAndRoleMiddlewareTest extends TestCase
         $response->assertRedirect(route('login'));
         $this->assertGuest();
     }
+
+    public function test_admin_portal_displays_admin_badge(): void
+    {
+        $admin = User::where('role', 'admin')->first();
+
+        $response = $this->actingAs($admin)->get('/admin/electoral');
+        $response->assertStatus(200);
+        $response->assertSee('role-badge-admin');
+        $response->assertSee('Admin');
+    }
+
+    public function test_assistant_portal_displays_assistant_badge(): void
+    {
+        $assistant = User::where('role', 'assistant')->first();
+
+        $response = $this->actingAs($assistant)->get('/assistant/electoral');
+        $response->assertStatus(200);
+        $response->assertSee('role-badge-assistant');
+        $response->assertSee('Assistant');
+    }
 }

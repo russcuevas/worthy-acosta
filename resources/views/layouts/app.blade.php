@@ -1,3 +1,6 @@
+@php
+    $isAssistant = (auth()->check() && auth()->user()->role === 'assistant') || (isset($role) && $role === 'assistant');
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,7 +19,7 @@
         <!-- Sidebar -->
         <aside class="app-sidebar" id="appSidebar">
             <div class="sidebar-header">
-                <a href="{{ route(isset($role) && $role === 'assistant' ? 'assistant.electoral' : 'admin.electoral') }}"
+                <a href="{{ route($isAssistant ? 'assistant.electoral' : 'admin.electoral') }}"
                     class="brand-link">
                     <img src="{{ asset('images/WA-Logo.png') }}" alt="Worthy Acosta Logo" class="brand-logo-img">
                 </a>
@@ -27,8 +30,8 @@
                 <div class="nav-section-title">Navigation</div>
                 <ul class="nav-list">
                     <li class="nav-item">
-                        <a href="{{ route('admin.electoral') }}"
-                            class="nav-link {{ request()->routeIs('admin.electoral') || request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                        <a href="{{ route($isAssistant ? 'assistant.electoral' : 'admin.electoral') }}"
+                            class="nav-link {{ request()->routeIs('*electoral*') || request()->routeIs('*.dashboard') ? 'active' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -38,7 +41,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route(isset($role) && $role === 'assistant' ? 'assistant.assistance.index' : 'admin.assistance.index') }}"
+                        <a href="{{ route($isAssistant ? 'assistant.assistance.index' : 'admin.assistance.index') }}"
                             class="nav-link {{ request()->routeIs('*assistance*') ? 'active' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor">
@@ -49,7 +52,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route(isset($role) && $role === 'assistant' ? 'assistant.events.index' : 'admin.events.index') }}"
+                        <a href="{{ route($isAssistant ? 'assistant.events.index' : 'admin.events.index') }}"
                             class="nav-link {{ request()->routeIs('*events*') ? 'active' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor">
@@ -60,7 +63,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route(isset($role) && $role === 'assistant' ? 'assistant.directory.index' : 'admin.directory.index') }}"
+                        <a href="{{ route($isAssistant ? 'assistant.directory.index' : 'admin.directory.index') }}"
                             class="nav-link {{ request()->routeIs('*directory*') ? 'active' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor">
@@ -71,7 +74,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route(isset($role) && $role === 'assistant' ? 'assistant.issues.index' : 'admin.issues.index') }}"
+                        <a href="{{ route($isAssistant ? 'assistant.issues.index' : 'admin.issues.index') }}"
                             class="nav-link {{ request()->routeIs('*issues*') ? 'active' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor">
@@ -82,7 +85,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route(isset($role) && $role === 'assistant' ? 'assistant.demography.index' : 'admin.demography.index') }}"
+                        <a href="{{ route($isAssistant ? 'assistant.demography.index' : 'admin.demography.index') }}"
                             class="nav-link {{ request()->routeIs('*demography*') ? 'active' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor">
@@ -93,7 +96,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route(isset($role) && $role === 'assistant' ? 'assistant.survey.index' : 'admin.survey.index') }}"
+                        <a href="{{ route($isAssistant ? 'assistant.survey.index' : 'admin.survey.index') }}"
                             class="nav-link {{ request()->routeIs('*survey*') ? 'active' : '' }}">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                 stroke="currentColor">
@@ -109,11 +112,27 @@
             <div class="sidebar-footer">
                 <div class="user-profile-badge">
                     <div class="avatar">
-                        @yield('user_initials', 'WA')
+                        @if(auth()->check())
+                            {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+                        @else
+                            @yield('user_initials', 'WA')
+                        @endif
                     </div>
                     <div class="user-info">
-                        <div class="user-name">@yield('user_name', 'Russel Acosta')</div>
-                        <div class="user-role">@yield('user_role_label', 'Administrator')</div>
+                        <div class="user-name">
+                            @if(auth()->check())
+                                {{ auth()->user()->name }}
+                            @else
+                                @yield('user_name', 'Russel Acosta')
+                            @endif
+                        </div>
+                        <div class="user-role">
+                            @if(auth()->check())
+                                {{ auth()->user()->role === 'assistant' ? 'Assistant Portal' : 'Administrator' }}
+                            @else
+                                @yield('user_role_label', 'Administrator')
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -132,7 +151,25 @@
                 </div>
 
                 <div class="header-right">
-                    @yield('role_badge')
+                    @hasSection('role_badge')
+                        @yield('role_badge')
+                    @elseif(auth()->check())
+                        @if(auth()->user()->role === 'assistant')
+                            <span class="role-badge-pill role-badge-assistant">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                </svg>
+                                Assistant Mode
+                            </span>
+                        @else
+                            <span class="role-badge-pill role-badge-admin">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                                </svg>
+                                Administrator
+                            </span>
+                        @endif
+                    @endif
 
                     <!-- Logout Link -->
                     <form action="{{ route('logout') }}" method="POST" style="display: inline;">
@@ -155,8 +192,57 @@
         </div>
     </div>
 
+    <!-- Floating Toast Notification (Bottom Right) -->
+    <div class="bottom-toast-container" id="bottomToastContainer">
+        @if (session('error'))
+            <div class="bottom-toast toast-error" id="appToast">
+                <span class="toast-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="#EF4444">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                    </svg>
+                </span>
+                <span class="toast-text">{{ session('error') }}</span>
+                <button type="button" class="toast-close-btn" onclick="dismissToast(this)" aria-label="Close">&times;</button>
+            </div>
+        @elseif (session('success'))
+            <div class="bottom-toast toast-success" id="appToast">
+                <span class="toast-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="#10B981">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                </span>
+                <span class="toast-text">{{ session('success') }}</span>
+                <button type="button" class="toast-close-btn" onclick="dismissToast(this)" aria-label="Close">&times;</button>
+            </div>
+        @elseif (session('info'))
+            <div class="bottom-toast toast-info" id="appToast">
+                <span class="toast-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="var(--color-wave-cyan)">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                    </svg>
+                </span>
+                <span class="toast-text">{{ session('info') }}</span>
+                <button type="button" class="toast-close-btn" onclick="dismissToast(this)" aria-label="Close">&times;</button>
+            </div>
+        @endif
+    </div>
+
     <!-- Custom JS -->
     <script src="{{ asset('js/app.js') }}"></script>
+    <script>
+        function dismissToast(el) {
+            const toast = el.closest ? el.closest('.bottom-toast') : el;
+            if (!toast) return;
+            toast.classList.add('hide');
+            setTimeout(() => { toast.remove(); }, 350);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const toast = document.getElementById('appToast');
+            if (toast) {
+                setTimeout(() => { dismissToast(toast); }, 3200);
+            }
+        });
+    </script>
     @yield('scripts')
 </body>
 

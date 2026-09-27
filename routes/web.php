@@ -19,7 +19,7 @@ Route::post('/authenticate', [AuthController::class, 'authenticate'])->name('aut
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin routes
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', function () {
         return redirect()->route('admin.electoral');
     });
@@ -112,7 +112,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // Assistant routes
-Route::prefix('assistant')->name('assistant.')->group(function () {
+Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assistant'])->group(function () {
     Route::get('/', function () {
         return redirect()->route('assistant.electoral');
     });

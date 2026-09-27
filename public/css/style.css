@@ -956,3 +956,270 @@ button, input, select {
     }
 }
 
+/* ==========================================================================
+   Role Badges & Alerts
+   ========================================================================== */
+.role-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.role-badge-admin {
+    background: #EBF3FB;
+    color: #075998;
+    border: 1px solid #C4DEF3;
+}
+
+.role-badge-assistant {
+    background: #F0FDF4;
+    color: #166534;
+    border: 1px solid #BBF7D0;
+}
+
+.auth-alert {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.86rem;
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    line-height: 1.45;
+}
+
+.auth-alert-error {
+    background-color: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #991B1B;
+}
+
+.auth-alert-success {
+    background-color: #F0FDF4;
+    border: 1px solid #BBF7D0;
+    color: #166534;
+}
+
+.auth-alert-info {
+    background-color: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #1E40AF;
+}
+
+.password-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrap .form-input-bordered {
+    padding-right: 44px;
+}
+
+.btn-toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast);
+}
+
+.btn-toggle-password:hover {
+    color: var(--color-deep-navy);
+}
+
+.auth-remember-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+    margin-bottom: 20px;
+}
+
+.remember-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    user-select: none;
+}
+
+.remember-checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-primary-blue);
+    cursor: pointer;
+}
+
+.demo-credentials-box {
+    margin-top: 24px;
+    background: #F8FAFC;
+    border: 1px dashed #CBD5E1;
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+}
+
+.demo-credentials-title {
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    color: #64748B;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.demo-credentials-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.demo-chip {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+}
+
+.demo-chip:hover {
+    border-color: #075998;
+    background: #F0F7FF;
+}
+
+.demo-chip-role {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #075998;
+}
+
+.demo-chip-email {
+    font-size: 0.78rem;
+    color: #334155;
+    word-break: break-all;
+}
+
+.demo-chip-pass {
+    font-size: 0.72rem;
+    color: #64748B;
+}
+
+/* ==========================================================================
+   Bottom-Right Floating Toast Notification (App & Auth)
+   ========================================================================== */
+.bottom-toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.bottom-toast {
+    pointer-events: auto;
+    background: #102A4E;
+    color: #FFFFFF;
+    padding: 13px 18px;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    border: 1px solid var(--color-wave-cyan);
+    animation: toastSlideUp 0.3s ease-out forwards;
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    max-width: 420px;
+}
+
+.bottom-toast.toast-error {
+    background: #102A4E;
+    border: 1.5px solid #EF4444;
+}
+
+.bottom-toast.toast-success {
+    background: #102A4E;
+    border: 1.5px solid #10B981;
+}
+
+.bottom-toast.toast-info {
+    background: #102A4E;
+    border: 1.5px solid var(--color-wave-cyan);
+}
+
+.bottom-toast .toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.bottom-toast .toast-text {
+    flex: 1;
+    line-height: 1.4;
+    color: #F1F5F9;
+}
+
+.bottom-toast .toast-close-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 0 4px;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    margin-left: 4px;
+    transition: color 0.15s ease;
+}
+
+.bottom-toast .toast-close-btn:hover {
+    color: #FFFFFF;
+}
+
+.bottom-toast.hide {
+    opacity: 0;
+    transform: translateY(16px);
+}
+
+@keyframes toastSlideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+

@@ -20,9 +20,36 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
+        'role',
     ];
+
+    /**
+     * Check if user has administrator role
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user has assistant role
+     */
+    public function isAssistant(): bool
+    {
+        return $this->role === 'assistant';
+    }
+
+    /**
+     * Check if user has any of the given roles
+     */
+    public function hasRole(string|array $roles): bool
+    {
+        $roleList = is_array($roles) ? $roles : explode(',', $roles);
+        return in_array($this->role, array_map('trim', $roleList), true);
+    }
 
     /**
      * The attributes that should be hidden for serialization.

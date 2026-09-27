@@ -24,10 +24,6 @@ class SurveyController extends Controller
         }
 
         $periods = SurveyPeriod::where('is_active', true)->orderBy('start_date', 'desc')->get();
-        if ($periods->isEmpty()) {
-            \Artisan::call('db:seed', ['--class' => 'SurveySeeder']);
-            $periods = SurveyPeriod::where('is_active', true)->orderBy('start_date', 'desc')->get();
-        }
 
         // Distinct candidate names and colors
         $candidates = SurveyRecord::select('candidate_name', 'candidate_color')
@@ -60,6 +56,9 @@ class SurveyController extends Controller
         $candidateFilter = $request->input('candidate');
         $search = $request->input('search');
 
+        // All active barangays
+        $allBarangays = Barangay::where('is_active', true)->orderBy('id')->get();
+
         // Determine active period
         if (empty($periodId) || $periodId === 'latest') {
             $activePeriod = SurveyPeriod::where('is_active', true)->orderBy('start_date', 'desc')->first();
@@ -69,18 +68,36 @@ class SurveyController extends Controller
 
         if (!$activePeriod) {
             return response()->json([
-                'success' => false,
-                'message' => 'No active survey periods found.'
-            ], 404);
+                'success' => true,
+                'is_empty' => true,
+                'message' => 'No active survey periods found.',
+                'active_period' => [
+                    'id' => '',
+                    'name' => 'No Survey Period',
+                ],
+                'kpis' => [
+                    'leader_name' => '--',
+                    'leader_rating' => '0.0',
+                    'leader_margin' => '0.0%',
+                    'total_sample_size' => 0,
+                    'date_range' => 'No active survey period encoded',
+                    'barangays_led' => '0 / ' . ($allBarangays->count() ?: 18),
+                    'stronghold' => '--',
+                    'methodology' => '--',
+                    'notes' => '',
+                    'filter_context' => 'No Survey Data Available',
+                ],
+                'headline_results' => [],
+                'barangays' => [],
+                'records' => [],
+                'historical_trend' => [],
+            ]);
         }
 
         // 1. Get all records for the selected period
         $periodRecords = SurveyRecord::with('barangay')
             ->where('survey_period_id', $activePeriod->id)
             ->get();
-
-        // All active barangays
-        $allBarangays = Barangay::where('is_active', true)->orderBy('id')->get();
 
         // 1. All records for the active period
         $allPeriodRecords = SurveyRecord::with('barangay')

@@ -19,12 +19,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             BarangaySeeder::class,
             ElectoralDataSeeder::class,
-            AssistanceSeeder::class,
-            EventSeeder::class,
-            DirectorySeeder::class,
-            IssueSeeder::class,
-            SurveySeeder::class,
-            DemographySeeder::class,
         ]);
     }
 }

@@ -6,6 +6,198 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign in - Worthy Acosta</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <style>
+        .modal-backdrop-custom {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .forgot-pass-dialog {
+            background: #FFFFFF;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 490px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            animation: modalFadeIn 0.22s ease-out;
+            overflow: hidden;
+            border: 1px solid rgba(226, 232, 240, 0.9);
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .forgot-pass-header {
+            padding: 22px 24px;
+            background: linear-gradient(135deg, #092C4C, #075998);
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+        }
+
+        .forgot-pass-icon-badge {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #38BDF8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .under-dev-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 9px;
+            border-radius: 9999px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            background: #FEF3C7;
+            color: #92400E;
+            margin-bottom: 4px;
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #D97706;
+            animation: pulseAnim 1.5s infinite;
+        }
+
+        @keyframes pulseAnim {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.3); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .forgot-pass-header h3 {
+            margin: 0;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #FFFFFF;
+        }
+
+        .forgot-pass-close-btn {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            color: #FFFFFF;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: all 0.2s ease;
+        }
+
+        .forgot-pass-close-btn:hover {
+            background: rgba(220, 38, 38, 0.9);
+        }
+
+        .forgot-pass-body {
+            padding: 22px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .forgot-pass-notice-card {
+            background: #FFFBEB;
+            border: 1.5px solid #FDE68A;
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: #78350F;
+            font-size: 0.84rem;
+            line-height: 1.5;
+        }
+
+        .notice-card-header {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-weight: 800;
+            color: #92400E;
+            margin-bottom: 6px;
+            font-size: 0.86rem;
+        }
+
+        .notice-card-subtext {
+            margin-top: 8px;
+            font-size: 0.74rem;
+            color: #B45309;
+            opacity: 0.9;
+        }
+
+        .forgot-pass-support-info {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .forgot-pass-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .forgot-pass-form-group label {
+            font-size: 0.80rem;
+            font-weight: 700;
+            color: #0F172A;
+        }
+
+        .forgot-pass-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #EEF2F6;
+            background: #FAFBFD;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-forgot-close {
+            background: linear-gradient(135deg, var(--color-primary-blue), var(--color-deep-navy));
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(7, 89, 152, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .btn-forgot-close:hover {
+            box-shadow: 0 4px 12px rgba(7, 89, 152, 0.35);
+            transform: translateY(-1px);
+        }
+    </style>
 </head>
 
 <body class="split-auth-body">
@@ -72,12 +264,8 @@
                         </div>
                     </div>
 
-                    <div class="auth-remember-row">
-                        <label class="remember-checkbox-label">
-                            <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                            <span>Remember this device</span>
-                        </label>
-                        <a href="#" class="auth-sublink">Forgot Password?</a>
+                    <div class="auth-remember-row" style="justify-content: flex-end;">
+                        <a href="javascript:void(0)" class="auth-sublink" id="btnForgotPassword">Forgot Password?</a>
                     </div>
 
                     <button type="submit" class="btn-signin" id="btnSubmit">
@@ -105,6 +293,63 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal (Under Development) -->
+    <div class="modal-backdrop-custom" id="forgotPasswordModalBackdrop" style="display: none;">
+        <div class="forgot-pass-dialog">
+            <div class="forgot-pass-header">
+                <div class="forgot-pass-icon-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="under-dev-pill">
+                        <span class="pulse-dot"></span>
+                        Under Development
+                    </div>
+                    <h3>Password Recovery</h3>
+                </div>
+                <button type="button" class="forgot-pass-close-btn" id="btnCloseForgotModal" aria-label="Close modal">&times;</button>
+            </div>
+
+            <div class="forgot-pass-body">
+                <div class="forgot-pass-notice-card">
+                    <div class="notice-card-header">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        </svg>
+                        <span>System Notice / Deployment Note</span>
+                    </div>
+                    <p style="margin: 0 0 8px 0;">
+                        Ang automated password recovery via email ay <strong>kasalukuyang under development</strong>. Magiging fully functional at gagana lamang ito kapag nai-deploy na ang system sa live production server na may naka-configure na official mail delivery service (SMTP).
+                    </p>
+                    <div class="notice-card-subtext">
+                        <em>(This automated reset feature will be activated once deployed to the production environment.)</em>
+                    </div>
+                </div>
+
+                <div class="forgot-pass-support-info">
+                    <div style="font-weight: 700; color: #092C4C; margin-bottom: 6px; font-size: 0.85rem;">
+                        Paano ma-access ang iyong account?
+                    </div>
+                    <div style="font-size: 0.80rem; color: #64748B; line-height: 1.5;">
+                        Para sa agarang pag-access o pag-reset ng password, mangyaring makipag-ugnayan sa inyong <strong>System Administrator</strong> o gamitin ang mga nakatalagang testing accounts sa login form.
+                    </div>
+                </div>
+
+                <div class="forgot-pass-form-group">
+                    <label for="recoveryEmail">Your Registered Username or Email</label>
+                    <input type="text" id="recoveryEmail" class="form-input-bordered" placeholder="e.g. admin or your-email@worthyacosta.ph" disabled style="background:#F1F5F9; color:#64748B; cursor:not-allowed;">
+                    <span style="font-size: 0.72rem; color: #94A3B8;">Automatic recovery links will be sent here upon live deployment.</span>
+                </div>
+            </div>
+
+            <div class="forgot-pass-footer">
+                <button type="button" class="btn-forgot-close" id="btnCancelForgotModal">Naiintindihan (Close)</button>
             </div>
         </div>
     </div>
@@ -195,6 +440,36 @@
             emailInput.value = login;
             passwordInput.value = pass;
             emailInput.focus();
+        }
+
+        // Forgot Password Modal Controls
+        const forgotModal = document.getElementById('forgotPasswordModalBackdrop');
+        const btnForgot = document.getElementById('btnForgotPassword');
+        const btnCloseForgot = document.getElementById('btnCloseForgotModal');
+        const btnCancelForgot = document.getElementById('btnCancelForgotModal');
+
+        if (btnForgot && forgotModal) {
+            btnForgot.addEventListener('click', (e) => {
+                e.preventDefault();
+                forgotModal.style.display = 'flex';
+            });
+        }
+
+        function closeForgotModal() {
+            if (forgotModal) {
+                forgotModal.style.display = 'none';
+            }
+        }
+
+        if (btnCloseForgot) btnCloseForgot.addEventListener('click', closeForgotModal);
+        if (btnCancelForgot) btnCancelForgot.addEventListener('click', closeForgotModal);
+
+        if (forgotModal) {
+            forgotModal.addEventListener('click', (e) => {
+                if (e.target === forgotModal) {
+                    closeForgotModal();
+                }
+            });
         }
     </script>
 </body>

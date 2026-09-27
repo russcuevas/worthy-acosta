@@ -878,21 +878,13 @@
             <input type="hidden" id="editRecordId" name="record_id">
             <div class="modal-body-custom">
                 <div class="form-group-custom">
-                    <label for="editBarangayId">Barangay *</label>
-                    <select id="editBarangayId" name="barangay_id" class="form-control-custom" required>
-                        @foreach ($barangays as $bgy)
-                            <option value="{{ $bgy->id }}">Brgy. {{ $bgy->name }}</option>
-                        @endforeach
-                    </select>
+                    <label>Barangay</label>
+                    <input type="text" id="editBarangayName" class="form-control-custom" readonly style="background:#F1F5F9; color:#64748B; cursor:not-allowed;">
                 </div>
 
                 <div class="form-group-custom">
-                    <label for="editSectorId">Community Sector *</label>
-                    <select id="editSectorId" name="sector_id" class="form-control-custom" required>
-                        @foreach ($sectors as $sec)
-                            <option value="{{ $sec->id }}">{{ $sec->name }}</option>
-                        @endforeach
-                    </select>
+                    <label>Community Sector</label>
+                    <input type="text" id="editSectorName" class="form-control-custom" readonly style="background:#F1F5F9; color:#64748B; cursor:not-allowed;">
                 </div>
 
                 <div class="form-group-custom">
@@ -1204,8 +1196,8 @@
                         if (!res.success) return;
                         const r = res.record;
                         $('#editRecordId').val(r.id);
-                        $('#editBarangayId').val(r.barangay_id);
-                        $('#editSectorId').val(r.sector_id);
+                        $('#editBarangayName').val('Brgy. ' + r.barangay_name);
+                        $('#editSectorName').val(r.sector_name);
                         $('#editMembersCount').val(r.members_count);
                         $('#editNotes').val(r.notes || '');
 

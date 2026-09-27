@@ -110,8 +110,8 @@
             </div>
 
             <div class="sidebar-footer">
-                <div class="user-profile-badge">
-                    <div class="avatar">
+                <div class="user-profile-badge" id="sidebarUserProfileBtn" title="Click to edit profile & change password" style="cursor: pointer;">
+                    <div class="avatar" id="sidebarUserAvatar">
                         @if(auth()->check())
                             {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
                         @else
@@ -119,7 +119,7 @@
                         @endif
                     </div>
                     <div class="user-info">
-                        <div class="user-name">
+                        <div class="user-name" id="sidebarUserName">
                             @if(auth()->check())
                                 {{ auth()->user()->name }}
                             @else
@@ -133,6 +133,11 @@
                                 @yield('user_role_label', 'Administrator')
                             @endif
                         </div>
+                    </div>
+                    <div class="user-badge-edit-icon" title="Edit Profile & Password">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" />
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -223,6 +228,118 @@
         @endif
     </div>
 
+    <!-- Global User Profile & Change Password Modal -->
+    <div class="global-profile-backdrop" id="globalProfileModalBackdrop">
+        <div class="global-profile-dialog">
+            <div class="global-profile-header">
+                <div class="global-profile-user-summary">
+                    <div class="global-profile-avatar" id="modalUserAvatar">
+                        {{ auth()->check() ? strtoupper(substr(auth()->user()->name, 0, 2)) : 'WA' }}
+                    </div>
+                    <div>
+                        <h3 id="modalUserName">{{ auth()->check() ? auth()->user()->name : 'User' }}</h3>
+                        <p id="modalUserEmail">{{ auth()->check() ? auth()->user()->email : 'user@worthyacosta.ph' }}</p>
+                    </div>
+                </div>
+                <button type="button" class="global-profile-close" id="btnCloseGlobalProfile" aria-label="Close">&times;</button>
+            </div>
+
+            <!-- Modal Tabs -->
+            <div class="global-profile-tabs">
+                <button type="button" class="global-profile-tab active" data-tab="tabProfileInfo" id="tabBtnProfileInfo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                    <span>Edit Profile</span>
+                </button>
+                <button type="button" class="global-profile-tab" data-tab="tabChangePassword" id="tabBtnChangePassword">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    </svg>
+                    <span>Change Password</span>
+                </button>
+            </div>
+
+            <!-- Tab 1: Profile Info -->
+            <div class="global-profile-tab-content active" id="tabProfileInfo">
+                <form id="globalProfileForm">
+                    @csrf
+                    <div class="global-profile-body">
+                        <div class="global-profile-field">
+                            <label for="modalInputName">Full Name *</label>
+                            <input type="text" id="modalInputName" name="name" class="global-profile-input" value="{{ auth()->check() ? auth()->user()->name : '' }}" required>
+                        </div>
+                        <div class="global-profile-field">
+                            <label for="modalInputUsername">Username *</label>
+                            <input type="text" id="modalInputUsername" name="username" class="global-profile-input" value="{{ auth()->check() ? auth()->user()->username : '' }}" required>
+                        </div>
+                        <div class="global-profile-field">
+                            <label for="modalInputEmail">Email Address *</label>
+                            <input type="email" id="modalInputEmail" name="email" class="global-profile-input" value="{{ auth()->check() ? auth()->user()->email : '' }}" required>
+                        </div>
+                        <div class="global-profile-field">
+                            <label>System Role</label>
+                            <input type="text" class="global-profile-input" value="{{ auth()->check() && auth()->user()->role === 'admin' ? 'Administrator (Full Access)' : 'Assistant Officer (Forms & Records)' }}" readonly style="background:#F1F5F9; color:#64748B; cursor:not-allowed;">
+                        </div>
+                    </div>
+                    <div class="global-profile-footer">
+                        <button type="button" class="btn-profile-modal-cancel" id="btnCancelProfileModal">Cancel</button>
+                        <button type="submit" class="btn-profile-modal-save" id="btnSubmitModalProfile">Save Profile Changes</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tab 2: Change Password -->
+            <div class="global-profile-tab-content" id="tabChangePassword" style="display:none;">
+                <form id="globalPasswordForm">
+                    @csrf
+                    <div class="global-profile-body">
+                        <div class="global-profile-field">
+                            <label for="modalCurrentPassword">Current Password *</label>
+                            <div class="global-input-wrapper">
+                                <input type="password" id="modalCurrentPassword" name="current_password" class="global-profile-input" required autocomplete="current-password">
+                                <button type="button" class="global-eye-btn" onclick="toggleModalEye('modalCurrentPassword')" title="Toggle visibility">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="global-profile-field">
+                            <label for="modalNewPassword">New Password * <span style="font-size:0.74rem; color:var(--text-muted); font-weight:normal;">(Minimum 6 characters)</span></label>
+                            <div class="global-input-wrapper">
+                                <input type="password" id="modalNewPassword" name="password" class="global-profile-input" minlength="6" required autocomplete="new-password">
+                                <button type="button" class="global-eye-btn" onclick="toggleModalEye('modalNewPassword')" title="Toggle visibility">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="global-profile-field">
+                            <label for="modalConfirmPassword">Confirm New Password *</label>
+                            <div class="global-input-wrapper">
+                                <input type="password" id="modalConfirmPassword" name="password_confirmation" class="global-profile-input" minlength="6" required autocomplete="new-password">
+                                <button type="button" class="global-eye-btn" onclick="toggleModalEye('modalConfirmPassword')" title="Toggle visibility">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="global-profile-footer">
+                        <button type="button" class="btn-profile-modal-cancel" id="btnCancelPasswordModal">Cancel</button>
+                        <button type="submit" class="btn-profile-modal-save" id="btnSubmitModalPassword">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Custom JS -->
     <script src="{{ asset('js/app.js') }}"></script>
     <script>
@@ -232,10 +349,201 @@
             toast.classList.add('hide');
             setTimeout(() => { toast.remove(); }, 350);
         }
+
+        // Global Toast Notification Helper
+        window.showAppToast = function(message, type = 'success') {
+            const container = document.getElementById('bottomToastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `bottom-toast toast-${type === 'error' ? 'error' : 'success'}`;
+
+            const iconSvg = type === 'error'
+                ? `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="#EF4444"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>`
+                : `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="#10B981"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>`;
+
+            toast.innerHTML = `
+                <span class="toast-icon">${iconSvg}</span>
+                <span class="toast-text">${message}</span>
+                <button type="button" class="toast-close-btn" onclick="dismissToast(this)" aria-label="Close">&times;</button>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => { dismissToast(toast); }, 3500);
+        };
+
+        window.toggleModalEye = function(inputId) {
+            const inp = document.getElementById(inputId);
+            if (!inp) return;
+            inp.type = inp.type === 'password' ? 'text' : 'password';
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
             const toast = document.getElementById('appToast');
             if (toast) {
                 setTimeout(() => { dismissToast(toast); }, 3200);
+            }
+
+            // Global Profile Modal Controls
+            const profileModal = document.getElementById('globalProfileModalBackdrop');
+            const openBtn = document.getElementById('btnOpenGlobalProfile');
+            const sidebarBtn = document.getElementById('sidebarUserProfileBtn');
+            const closeBtn = document.getElementById('btnCloseGlobalProfile');
+            const cancelBtn1 = document.getElementById('btnCancelProfileModal');
+            const cancelBtn2 = document.getElementById('btnCancelPasswordModal');
+
+            function openProfileModal() {
+                if (profileModal) {
+                    profileModal.style.display = 'flex';
+                }
+            }
+
+            function closeProfileModal() {
+                if (profileModal) {
+                    profileModal.style.display = 'none';
+                }
+            }
+
+            if (openBtn) openBtn.addEventListener('click', openProfileModal);
+            if (sidebarBtn) sidebarBtn.addEventListener('click', openProfileModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeProfileModal);
+            if (cancelBtn1) cancelBtn1.addEventListener('click', closeProfileModal);
+            if (cancelBtn2) cancelBtn2.addEventListener('click', closeProfileModal);
+
+            if (profileModal) {
+                profileModal.addEventListener('click', function(e) {
+                    if (e.target === profileModal) {
+                        closeProfileModal();
+                    }
+                });
+            }
+
+            // Tabs Switcher
+            const tabBtns = document.querySelectorAll('.global-profile-tab');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const targetTabId = this.getAttribute('data-tab');
+                    document.querySelectorAll('.global-profile-tab-content').forEach(content => {
+                        content.style.display = content.id === targetTabId ? 'block' : 'none';
+                    });
+                });
+            });
+
+            // Handle Profile Form Submit
+            const profileForm = document.getElementById('globalProfileForm');
+            if (profileForm) {
+                profileForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const submitBtn = document.getElementById('btnSubmitModalProfile');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Saving...';
+
+                    fetch("{{ route('profile.update') }}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            name: document.getElementById('modalInputName').value,
+                            username: document.getElementById('modalInputUsername').value,
+                            email: document.getElementById('modalInputEmail').value
+                        })
+                    })
+                    .then(res => res.json().then(data => ({ status: res.status, body: data })))
+                    .then(({ status, body }) => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Save Profile Changes';
+
+                        if (status === 200 && body.success) {
+                            window.showAppToast(body.message || 'Profile updated successfully!');
+                            closeProfileModal();
+
+                            // Live update header & sidebar
+                            if (body.user) {
+                                document.getElementById('modalUserName').textContent = body.user.name;
+                                document.getElementById('modalUserEmail').textContent = body.user.email;
+                                document.getElementById('modalUserAvatar').textContent = body.user.initials;
+
+                                const sideName = document.getElementById('sidebarUserName');
+                                if (sideName) sideName.textContent = body.user.name;
+                                const sideAvatar = document.getElementById('sidebarUserAvatar');
+                                if (sideAvatar) sideAvatar.textContent = body.user.initials;
+
+                                const pageHeroName = document.getElementById('heroUserName');
+                                if (pageHeroName) pageHeroName.textContent = body.user.name;
+                                const pageHeroEmail = document.getElementById('heroUserEmail');
+                                if (pageHeroEmail) pageHeroEmail.textContent = body.user.email;
+                                const pageHeroAvatar = document.getElementById('heroUserAvatar');
+                                if (pageHeroAvatar) pageHeroAvatar.textContent = body.user.initials;
+                            }
+                        } else {
+                            const errMsg = body.message || (body.errors ? Object.values(body.errors).flat().join('<br>') : 'Failed to update profile.');
+                            window.showAppToast(errMsg, 'error');
+                        }
+                    })
+                    .catch(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Save Profile Changes';
+                        window.showAppToast('An unexpected server error occurred.', 'error');
+                    });
+                });
+            }
+
+            // Handle Password Form Submit
+            const passwordForm = document.getElementById('globalPasswordForm');
+            if (passwordForm) {
+                passwordForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const newPass = document.getElementById('modalNewPassword').value;
+                    const confirmPass = document.getElementById('modalConfirmPassword').value;
+
+                    if (newPass !== confirmPass) {
+                        window.showAppToast('New password confirmation does not match.', 'error');
+                        return;
+                    }
+
+                    const submitBtn = document.getElementById('btnSubmitModalPassword');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Updating...';
+
+                    fetch("{{ route('profile.password') }}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            current_password: document.getElementById('modalCurrentPassword').value,
+                            password: newPass,
+                            password_confirmation: confirmPass
+                        })
+                    })
+                    .then(res => res.json().then(data => ({ status: res.status, body: data })))
+                    .then(({ status, body }) => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Update Password';
+
+                        if (status === 200 && body.success) {
+                            window.showAppToast(body.message || 'Password changed successfully!');
+                            passwordForm.reset();
+                            closeProfileModal();
+                        } else {
+                            const errMsg = body.message || (body.errors ? Object.values(body.errors).flat().join('<br>') : 'Failed to update password.');
+                            window.showAppToast(errMsg, 'error');
+                        }
+                    })
+                    .catch(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Update Password';
+                        window.showAppToast('An unexpected server error occurred.', 'error');
+                    });
+                });
             }
         });
     </script>

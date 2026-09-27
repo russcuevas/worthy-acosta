@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\DemographyController as AdminDemographyController
 use App\Http\Controllers\Admin\SurveyController as AdminSurveyController;
 use App\Http\Controllers\Assistant\DashboardController as AssistantDashboardController;
 use App\Http\Controllers\Assistant\ElectoralDataController as AssistantElectoralDataController;
+use App\Http\Controllers\ProfileController;
 
 // Authentication routes
 Route::get('/', [AuthController::class, 'login'])->name('home');
@@ -27,6 +28,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::get('/dashboard', function () {
         return redirect()->route('admin.electoral');
     });
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     
     // Electoral Data
     Route::get('/electoral', [AdminElectoralDataController::class, 'index'])->name('electoral');
@@ -117,6 +119,7 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
     Route::get('/', function () {
         return redirect()->route('assistant.electoral');
     });
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     // Electoral Data Module (Forms & Data Table without Maps)
     Route::get('/electoral', [AssistantElectoralDataController::class, 'index'])->name('electoral');
     Route::get('/electoral/data', [AssistantElectoralDataController::class, 'getData'])->name('electoral.data');
@@ -192,4 +195,12 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
         Route::post('/delete/{id}', [AdminSurveyController::class, 'destroy'])->name('delete');
         Route::post('/period/delete/{id}', [AdminSurveyController::class, 'destroyPeriod'])->name('period.delete');
     });
+});
+
+// Shared Profile & Security Routes for all authenticated users
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::get('/profile/data', [ProfileController::class, 'index'])->name('profile.data');
+    Route::post('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::post('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 });

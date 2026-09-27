@@ -24,7 +24,8 @@ class AssistanceController extends Controller
 
         $assistanceTypes = ['Financial', 'Burial', 'Tent', 'Item Donation', 'Others'];
 
-        return view('admin.assistance.index', compact('barangays', 'assistanceTypes'));
+        $view = $request->routeIs('assistant.*') ? 'assistant.assistance.index' : 'admin.assistance.index';
+        return view($view, compact('barangays', 'assistanceTypes'));
     }
 
     /**

@@ -46,7 +46,8 @@ class SurveyController extends Controller
             '#94A3B8', // Slate Grey
         ];
 
-        return view('admin.survey.index', compact('barangays', 'periods', 'candidates', 'defaultColors'));
+        $view = $request->routeIs('assistant.*') ? 'assistant.survey.index' : 'admin.survey.index';
+        return view($view, compact('barangays', 'periods', 'candidates', 'defaultColors'));
     }
 
     /**

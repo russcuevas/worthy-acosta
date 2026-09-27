@@ -32,7 +32,8 @@ class IssueController extends Controller
         $statuses = $this->statuses;
         $priorities = $this->priorities;
 
-        return view('admin.issues.index', compact('barangays', 'issueTypes', 'statuses', 'priorities'));
+        $view = $request->routeIs('assistant.*') ? 'assistant.issues.index' : 'admin.issues.index';
+        return view($view, compact('barangays', 'issueTypes', 'statuses', 'priorities'));
     }
 
     /**

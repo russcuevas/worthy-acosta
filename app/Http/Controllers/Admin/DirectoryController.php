@@ -24,7 +24,8 @@ class DirectoryController extends Controller
         $contactTypes = Directory::CONTACT_TYPES;
         $internalLabels = array_keys(Directory::INTERNAL_LABELS);
 
-        return view('admin.directory.index', compact('barangays', 'contactTypes', 'internalLabels'));
+        $view = $request->routeIs('assistant.*') ? 'assistant.directory.index' : 'admin.directory.index';
+        return view($view, compact('barangays', 'contactTypes', 'internalLabels'));
     }
 
     /**

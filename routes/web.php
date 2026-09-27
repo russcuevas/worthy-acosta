@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\IssueController as AdminIssueController;
 use App\Http\Controllers\Admin\DemographyController as AdminDemographyController;
 use App\Http\Controllers\Admin\SurveyController as AdminSurveyController;
 use App\Http\Controllers\Assistant\DashboardController as AssistantDashboardController;
+use App\Http\Controllers\Assistant\ElectoralDataController as AssistantElectoralDataController;
 
 // Authentication routes
 Route::get('/', [AuthController::class, 'login'])->name('home');
@@ -116,10 +117,15 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
     Route::get('/', function () {
         return redirect()->route('assistant.electoral');
     });
-    Route::get('/dashboard', function () {
-        return redirect()->route('assistant.electoral');
-    });
-    Route::get('/electoral', [AdminElectoralDataController::class, 'index'])->name('electoral');
+    // Electoral Data Module (Forms & Data Table without Maps)
+    Route::get('/electoral', [AssistantElectoralDataController::class, 'index'])->name('electoral');
+    Route::get('/electoral/data', [AssistantElectoralDataController::class, 'getData'])->name('electoral.data');
+    Route::get('/electoral/record/{id}', [AssistantElectoralDataController::class, 'show'])->name('electoral.show');
+    Route::post('/electoral/save', [AssistantElectoralDataController::class, 'saveData'])->name('electoral.save');
+    Route::post('/electoral/delete/{id}', [AssistantElectoralDataController::class, 'destroy'])->name('electoral.delete');
+    Route::post('/electoral/add-year', [AssistantElectoralDataController::class, 'addYear'])->name('electoral.add_year');
+    Route::post('/electoral/update-year', [AssistantElectoralDataController::class, 'updateYear'])->name('electoral.update_year');
+    Route::post('/electoral/delete-year', [AssistantElectoralDataController::class, 'deleteYear'])->name('electoral.delete_year');
 
     // Assistance Module
     Route::prefix('assistance')->name('assistance.')->group(function () {
@@ -129,7 +135,6 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
         Route::get('/record/{id}', [AdminAssistanceController::class, 'show'])->name('show');
         Route::post('/update/{id}', [AdminAssistanceController::class, 'update'])->name('update');
         Route::post('/delete/{id}', [AdminAssistanceController::class, 'destroy'])->name('delete');
-        Route::get('/export', [AdminAssistanceController::class, 'exportCsv'])->name('export');
     });
 
     // Events Module
@@ -141,7 +146,6 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
         Route::post('/update/{id}', [AdminEventController::class, 'update'])->name('update');
         Route::post('/mark-past/{id}', [AdminEventController::class, 'markPast'])->name('mark_past');
         Route::post('/delete/{id}', [AdminEventController::class, 'destroy'])->name('delete');
-        Route::get('/export', [AdminEventController::class, 'exportCsv'])->name('export');
     });
 
     // Directory Module
@@ -152,7 +156,6 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
         Route::get('/record/{id}', [AdminDirectoryController::class, 'show'])->name('show');
         Route::post('/update/{id}', [AdminDirectoryController::class, 'update'])->name('update');
         Route::post('/delete/{id}', [AdminDirectoryController::class, 'destroy'])->name('delete');
-        Route::get('/export', [AdminDirectoryController::class, 'exportCsv'])->name('export');
     });
 
     // Issues Module
@@ -163,7 +166,6 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
         Route::get('/record/{id}', [AdminIssueController::class, 'show'])->name('show');
         Route::post('/update/{id}', [AdminIssueController::class, 'update'])->name('update');
         Route::post('/delete/{id}', [AdminIssueController::class, 'destroy'])->name('delete');
-        Route::get('/export', [AdminIssueController::class, 'exportCsv'])->name('export');
     });
 
     // Demography Module
@@ -189,6 +191,5 @@ Route::prefix('assistant')->name('assistant.')->middleware(['auth', 'role:assist
         Route::post('/update/{id}', [AdminSurveyController::class, 'update'])->name('update');
         Route::post('/delete/{id}', [AdminSurveyController::class, 'destroy'])->name('delete');
         Route::post('/period/delete/{id}', [AdminSurveyController::class, 'destroyPeriod'])->name('period.delete');
-        Route::get('/export', [AdminSurveyController::class, 'exportCsv'])->name('export');
     });
 });

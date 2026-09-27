@@ -24,7 +24,8 @@ class EventController extends Controller
 
         $eventTypes = ['Municipal', 'Barangay', 'Sectoral', 'Political', 'Others'];
 
-        return view('admin.events.index', compact('barangays', 'eventTypes'));
+        $view = $request->routeIs('assistant.*') ? 'assistant.events.index' : 'admin.events.index';
+        return view($view, compact('barangays', 'eventTypes'));
     }
 
     /**

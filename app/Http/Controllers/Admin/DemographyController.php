@@ -22,8 +22,9 @@ class DemographyController extends Controller
         $role = $request->is('assistant*') ? 'assistant' : 'admin';
         $sectors = DemographicSector::orderBy('id')->get();
         $barangays = Barangay::orderBy('id')->get();
+        $view = $request->is('assistant*') ? 'assistant.demography.index' : 'admin.demography.index';
 
-        return view('admin.demography.index', compact('sectors', 'barangays', 'role'));
+        return view($view, compact('sectors', 'barangays', 'role'));
     }
 
     /**

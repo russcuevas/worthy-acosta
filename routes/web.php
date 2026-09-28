@@ -62,7 +62,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         Route::post('/update/{id}', [AdminEventController::class, 'update'])->name('update');
         Route::post('/mark-past/{id}', [AdminEventController::class, 'markPast'])->name('mark_past');
         Route::post('/delete/{id}', [AdminEventController::class, 'destroy'])->name('delete');
-        Route::get('/export', [AdminEventController::class, 'exportCsv'])->name('export');
     });
 
     // Directory Module

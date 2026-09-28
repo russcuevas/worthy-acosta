@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Barangay;
 use App\Models\Event;
 use Carbon\Carbon;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class EventController extends Controller
 {
@@ -16,6 +15,11 @@ class EventController extends Controller
      */
     public function index(Request $request)
     {
+        // Auto-tag Upcoming events as Past if event date/time has passed
+        Event::where('status', 'Upcoming')
+            ->where('event_datetime', '<', Carbon::now())
+            ->update(['status' => 'Past']);
+
         $barangays = Barangay::where('is_active', true)->orderBy('id')->get();
         if ($barangays->isEmpty()) {
             \Artisan::call('db:seed', ['--class' => 'BarangaySeeder']);
@@ -33,6 +37,11 @@ class EventController extends Controller
      */
     public function getData(Request $request)
     {
+        // Auto-tag Upcoming events as Past if event date/time has passed
+        Event::where('status', 'Upcoming')
+            ->where('event_datetime', '<', Carbon::now())
+            ->update(['status' => 'Past']);
+
         $status = $request->input('status', 'all'); // 'all', 'Upcoming', 'Past'
         $barangayId = $request->input('barangay_id');
         $eventType = $request->input('event_type');
@@ -300,6 +309,14 @@ class EventController extends Controller
             $validated['custom_type'] = null;
         }
 
+        // Automatic Status Flow: Check if event date/time has passed
+        $eventDate = Carbon::parse($validated['event_datetime']);
+        if ($eventDate->isPast()) {
+            $validated['status'] = 'Past';
+        } else {
+            $validated['status'] = 'Upcoming';
+        }
+
         // If status is Past and actual_attendees is not set, default to expected or 0
         if ($validated['status'] === 'Past' && (!isset($validated['actual_attendees']) || $validated['actual_attendees'] === null)) {
             $validated['actual_attendees'] = $validated['expected_attendees'];
@@ -381,6 +398,14 @@ class EventController extends Controller
             $validated['custom_type'] = null;
         }
 
+        // Automatic Status Flow: Check if event date/time has passed
+        $eventDate = Carbon::parse($validated['event_datetime']);
+        if ($eventDate->isPast()) {
+            $validated['status'] = 'Past';
+        } else {
+            $validated['status'] = 'Upcoming';
+        }
+
         $event->update($validated);
         $event->load('barangay');
 
@@ -437,113 +462,5 @@ class EventController extends Controller
             'success' => true,
             'message' => 'Event record deleted successfully!',
         ]);
-    }
-
-    /**
-     * Export filtered events to CSV.
-     */
-    public function exportCsv(Request $request)
-    {
-        $status = $request->input('status', 'all');
-        $barangayId = $request->input('barangay_id');
-        $eventType = $request->input('event_type');
-        $dateFrom = $request->input('date_from');
-        $dateTo = $request->input('date_to');
-        $speechRequired = $request->input('speech_required');
-        $search = $request->input('search');
-
-        $query = Event::with('barangay');
-
-        if (!empty($status) && $status !== 'all') {
-            $query->where('status', $status);
-        }
-
-        if (!empty($barangayId) && $barangayId !== 'all') {
-            $query->where('barangay_id', $barangayId);
-        }
-
-        if (!empty($eventType) && $eventType !== 'all') {
-            $query->where('event_type', $eventType);
-        }
-
-        if (!empty($dateFrom)) {
-            $query->whereDate('event_datetime', '>=', $dateFrom);
-        }
-
-        if (!empty($dateTo)) {
-            $query->whereDate('event_datetime', '<=', $dateTo);
-        }
-
-        if ($speechRequired !== null && $speechRequired !== '' && $speechRequired !== 'all') {
-            $query->where('speech_required', (bool) $speechRequired);
-        }
-
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('theme', 'like', "%{$search}%")
-                  ->orWhere('venue', 'like', "%{$search}%")
-                  ->orWhere('who_invited', 'like', "%{$search}%");
-            });
-        }
-
-        $records = $query->orderBy('event_datetime', 'desc')->get();
-
-        $filename = 'Events_Report_' . date('Y-m-d_His') . '.csv';
-
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-            'Pragma' => 'no-cache',
-            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-            'Expires' => '0',
-        ];
-
-        $callback = function () use ($records) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, [
-                'ID',
-                'Status',
-                'Date & Time',
-                'Barangay',
-                'Event Name',
-                'Theme',
-                'Event Type',
-                'Venue',
-                'Who Invited',
-                'Contact Information',
-                'Speech Required',
-                'Attendance Status',
-                'Expected Attendees',
-                'Actual Attendees',
-                'Request from Organizer',
-                'Details / Notes',
-            ]);
-
-            foreach ($records as $row) {
-                fputcsv($file, [
-                    $row->id,
-                    $row->status,
-                    $row->event_datetime ? $row->event_datetime->format('Y-m-d H:i') : '',
-                    $row->barangay ? $row->barangay->name : '',
-                    $row->name,
-                    $row->theme ?? '',
-                    $row->display_type,
-                    $row->venue,
-                    $row->who_invited,
-                    $row->contact_info ?? '',
-                    $row->speech_required ? 'YES' : 'NO',
-                    $row->attendance_status ?? '',
-                    $row->expected_attendees,
-                    $row->actual_attendees !== null ? $row->actual_attendees : 'Pending (Upcoming)',
-                    $row->request ?? '',
-                    $row->details ?? '',
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return new StreamedResponse($callback, 200, $headers);
     }
 }

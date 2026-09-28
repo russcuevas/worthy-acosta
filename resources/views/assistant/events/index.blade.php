@@ -1253,6 +1253,30 @@
                 $('#editCustomTypeWrap').toggle($(this).val() === 'Others');
             });
 
+            $('#addEventDatetime').on('change', function() {
+                if (this.value) {
+                    const selected = new Date(this.value);
+                    const now = new Date();
+                    if (selected < now) {
+                        $('#addStatus').val('Past');
+                    } else {
+                        $('#addStatus').val('Upcoming');
+                    }
+                }
+            });
+
+            $('#editEventDatetime').on('change', function() {
+                if (this.value) {
+                    const selected = new Date(this.value);
+                    const now = new Date();
+                    if (selected < now) {
+                        $('#editStatus').val('Past');
+                    } else {
+                        $('#editStatus').val('Upcoming');
+                    }
+                }
+            });
+
             // Load Data
             function loadEventsData() {
                 const status = $('#filterStatus').val();

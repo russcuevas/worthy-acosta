@@ -3400,6 +3400,18 @@
                 }
             }
 
+            document.getElementById('formDatetime').addEventListener('change', function() {
+                if (this.value) {
+                    const selected = new Date(this.value);
+                    const now = new Date();
+                    if (selected < now) {
+                        setClassificationChoice('Past');
+                    } else {
+                        setClassificationChoice('Upcoming');
+                    }
+                }
+            });
+
             formEventType.addEventListener('change', function() {
                 if (this.value === 'Others') {
                     customTypeContainer.style.display = 'flex';

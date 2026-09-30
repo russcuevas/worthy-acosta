@@ -4,7 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 use App\Models\User;
+use App\Mail\ResetPasswordMail;
 
 class AuthController extends Controller
 {
@@ -73,6 +79,159 @@ class AuthController extends Controller
         }
 
         return redirect()->intended(route('admin.electoral'));
+    }
+
+    /**
+     * Send a password reset link to the given user.
+     */
+    public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'string'],
+        ], [
+            'email.required' => 'Please enter your registered email address or username.',
+        ]);
+
+        $input = trim($request->input('email'));
+
+        // Find user by email or username
+        $user = User::where('email', $input)
+            ->orWhere('username', $input)
+            ->first();
+
+        if (!$user) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No account was found with that email address or username.',
+                ], 404);
+            }
+
+            return back()
+                ->withInput($request->only('email'))
+                ->with('error', 'No account was found with that email address or username.');
+        }
+
+        // Generate token and record in password_reset_tokens
+        $token = Str::random(64);
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            [
+                'token' => $token,
+                'created_at' => Carbon::now(),
+            ]
+        );
+
+        try {
+            Mail::to($user->email)->send(new ResetPasswordMail($token, $user));
+        } catch (\Throwable $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to send reset email: ' . $e->getMessage(),
+                ], 500);
+            }
+
+            return back()
+                ->withInput($request->only('email'))
+                ->with('error', 'Unable to send email right now. Please verify mail service settings or try again later.');
+        }
+
+        $successMsg = "A password reset link has been emailed to {$user->email}. Please check your inbox and spam folder.";
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $successMsg,
+            ]);
+        }
+
+        return back()->with('success', $successMsg);
+    }
+
+    /**
+     * Show the password reset form with the given token and email.
+     */
+    public function showResetPasswordForm(Request $request, ?string $token = null)
+    {
+        $email = $request->query('email');
+        $token = $token ?? $request->query('token');
+
+        if (!$email || !$token) {
+            return redirect()->route('login')->with('error', 'Invalid password reset link. Please request a new one.');
+        }
+
+        // Check if token exists and is valid
+        $resetRecord = DB::table('password_reset_tokens')
+            ->where('email', $email)
+            ->first();
+
+        if (!$resetRecord || $resetRecord->token !== $token) {
+            return redirect()->route('login')->with('error', 'This password reset link is invalid or has already been used.');
+        }
+
+        // Check token expiration (valid for 60 minutes)
+        if (Carbon::parse($resetRecord->created_at)->addMinutes(60)->isPast()) {
+            DB::table('password_reset_tokens')->where('email', $email)->delete();
+            return redirect()->route('login')->with('error', 'This password reset link has expired. Please request a new one.');
+        }
+
+        return view('auth.reset-password', [
+            'token' => $token,
+            'email' => $email,
+        ]);
+    }
+
+    /**
+     * Reset the user's password.
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => ['required', 'string'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ], [
+            'password.confirmed' => 'The password confirmation does not match.',
+            'password.min' => 'The password must be at least 6 characters long.',
+        ]);
+
+        $email = $request->input('email');
+        $token = $request->input('token');
+
+        // Check token validity in database
+        $resetRecord = DB::table('password_reset_tokens')
+            ->where('email', $email)
+            ->first();
+
+        if (!$resetRecord || $resetRecord->token !== $token) {
+            return back()
+                ->withInput($request->only('email'))
+                ->with('error', 'Invalid or expired password reset link. Please request a new link.');
+        }
+
+        if (Carbon::parse($resetRecord->created_at)->addMinutes(60)->isPast()) {
+            DB::table('password_reset_tokens')->where('email', $email)->delete();
+            return redirect()->route('login')->with('error', 'This password reset link has expired. Please request a new one.');
+        }
+
+        // Find user and update password
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return back()
+                ->withInput($request->only('email'))
+                ->with('error', 'User account not found.');
+        }
+
+        $user->password = Hash::make($request->input('password'));
+        $user->save();
+
+        // Delete reset token after successful reset
+        DB::table('password_reset_tokens')->where('email', $email)->delete();
+
+        return redirect()->route('login')->with('success', 'Your password has been successfully reset! You can now sign in with your new password.');
     }
 
     /**

@@ -60,27 +60,27 @@
             flex-shrink: 0;
         }
 
-        .under-dev-pill {
+        .recovery-status-pill {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 3px 9px;
+            padding: 3px 10px;
             border-radius: 9999px;
             font-size: 0.68rem;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.04em;
-            background: #FEF3C7;
-            color: #92400E;
+            background: #E0F2FE;
+            color: #0369A1;
             margin-bottom: 4px;
         }
 
-        .pulse-dot {
+        .active-dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: #D97706;
-            animation: pulseAnim 1.5s infinite;
+            background: #0284C7;
+            animation: pulseAnim 1.8s infinite;
         }
 
         @keyframes pulseAnim {
@@ -126,38 +126,24 @@
             gap: 16px;
         }
 
-        .forgot-pass-notice-card {
-            background: #FFFBEB;
-            border: 1.5px solid #FDE68A;
+        .forgot-pass-instruction-card {
+            background: #EFF6FF;
+            border: 1.5px solid #BFDBFE;
             border-radius: 10px;
             padding: 14px 16px;
-            color: #78350F;
+            color: #1E3A8A;
             font-size: 0.84rem;
             line-height: 1.5;
         }
 
-        .notice-card-header {
+        .instruction-card-header {
             display: flex;
             align-items: center;
             gap: 7px;
             font-weight: 800;
-            color: #92400E;
+            color: #1D4ED8;
             margin-bottom: 6px;
             font-size: 0.86rem;
-        }
-
-        .notice-card-subtext {
-            margin-top: 8px;
-            font-size: 0.74rem;
-            color: #B45309;
-            opacity: 0.9;
-        }
-
-        .forgot-pass-support-info {
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            border-radius: 10px;
-            padding: 14px 16px;
         }
 
         .forgot-pass-form-group {
@@ -177,10 +163,29 @@
             border-top: 1px solid #EEF2F6;
             background: #FAFBFD;
             display: flex;
+            align-items: center;
             justify-content: flex-end;
+            gap: 10px;
         }
 
-        .btn-forgot-close {
+        .btn-forgot-cancel {
+            background: #F1F5F9;
+            border: 1px solid #CBD5E1;
+            color: #475569;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-forgot-cancel:hover {
+            background: #E2E8F0;
+            color: #0F172A;
+        }
+
+        .btn-forgot-submit {
             background: linear-gradient(135deg, var(--color-primary-blue), var(--color-deep-navy));
             color: #FFFFFF;
             border: none;
@@ -191,11 +196,48 @@
             cursor: pointer;
             box-shadow: 0 2px 6px rgba(7, 89, 152, 0.25);
             transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .btn-forgot-close:hover {
+        .btn-forgot-submit:hover {
             box-shadow: 0 4px 12px rgba(7, 89, 152, 0.35);
             transform: translateY(-1px);
+        }
+
+        .btn-forgot-submit:disabled,
+        .btn-signin:disabled {
+            opacity: 0.75;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Loading Spinner Styles */
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .spinner-icon {
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.35);
+            border-top-color: #FFFFFF;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -216,7 +258,7 @@
             </div>
 
             <div class="banner-footer">
-                <span>&copy; 2026 Worthy Acosta</span>
+                <span>&copy; {{ date('Y') }} Worthy Acosta</span>
             </div>
         </div>
 
@@ -269,7 +311,7 @@
                     </div>
 
                     <button type="submit" class="btn-signin" id="btnSubmit">
-                        SIGN IN
+                        <span class="btn-text">SIGN IN</span>
                     </button>
                 </form>
 
@@ -297,7 +339,7 @@
         </div>
     </div>
 
-    <!-- Forgot Password Modal (Under Development) -->
+    <!-- Active Forgot Password Modal -->
     <div class="modal-backdrop-custom" id="forgotPasswordModalBackdrop" style="display: none;">
         <div class="forgot-pass-dialog">
             <div class="forgot-pass-header">
@@ -307,50 +349,50 @@
                     </svg>
                 </div>
                 <div>
-                    <div class="under-dev-pill">
-                        <span class="pulse-dot"></span>
-                        Under Development
+                    <div class="recovery-status-pill">
+                        <span class="active-dot"></span>
+                        Account Recovery
                     </div>
-                    <h3>Password Recovery</h3>
+                    <h3>Forgot Password</h3>
                 </div>
                 <button type="button" class="forgot-pass-close-btn" id="btnCloseForgotModal" aria-label="Close modal">&times;</button>
             </div>
 
-            <div class="forgot-pass-body">
-                <div class="forgot-pass-notice-card">
-                    <div class="notice-card-header">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                        </svg>
-                        <span>System Notice / Deployment Note</span>
+            <form action="{{ route('password.email') }}" method="POST" id="forgotPasswordForm">
+                @csrf
+                <div class="forgot-pass-body">
+                    <div class="forgot-pass-instruction-card">
+                        <div class="instruction-card-header">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                            </svg>
+                            <span>Official Password Recovery</span>
+                        </div>
+                        <p style="margin: 0; font-size: 0.82rem; line-height: 1.5; color: #1E3A8A;">
+                            Enter your registered <strong>username</strong> or <strong>email address</strong> below. We will send a secure password reset link to your email.
+                        </p>
                     </div>
-                    <p style="margin: 0 0 8px 0;">
-                        Ang automated password recovery via email ay <strong>kasalukuyang under development</strong>. Magiging fully functional at gagana lamang ito kapag nai-deploy na ang system sa live production server na may naka-configure na official mail delivery service (SMTP).
-                    </p>
-                    <div class="notice-card-subtext">
-                        <em>(This automated reset feature will be activated once deployed to the production environment.)</em>
+
+                    <div class="forgot-pass-form-group">
+                        <label for="recoveryEmail">Registered Username or Email Address <span style="color: #EF4444;">*</span></label>
+                        <input type="text" 
+                               id="recoveryEmail" 
+                               name="email" 
+                               class="form-input-bordered" 
+                               placeholder="e.g. admin or admin@worthyacosta.ph" 
+                               required 
+                               autocomplete="username">
+                        <span style="font-size: 0.72rem; color: #64748B;">A password reset link valid for 60 minutes will be delivered to your registered email.</span>
                     </div>
                 </div>
 
-                <div class="forgot-pass-support-info">
-                    <div style="font-weight: 700; color: #092C4C; margin-bottom: 6px; font-size: 0.85rem;">
-                        Paano ma-access ang iyong account?
-                    </div>
-                    <div style="font-size: 0.80rem; color: #64748B; line-height: 1.5;">
-                        Para sa agarang pag-access o pag-reset ng password, mangyaring makipag-ugnayan sa inyong <strong>System Administrator</strong> o gamitin ang mga nakatalagang testing accounts sa login form.
-                    </div>
+                <div class="forgot-pass-footer">
+                    <button type="button" class="btn-forgot-cancel" id="btnCancelForgotModal">Cancel</button>
+                    <button type="submit" class="btn-forgot-submit" id="btnForgotSubmit">
+                        <span class="btn-text">Send Reset Link</span>
+                    </button>
                 </div>
-
-                <div class="forgot-pass-form-group">
-                    <label for="recoveryEmail">Your Registered Username or Email</label>
-                    <input type="text" id="recoveryEmail" class="form-input-bordered" placeholder="e.g. admin or your-email@worthyacosta.ph" disabled style="background:#F1F5F9; color:#64748B; cursor:not-allowed;">
-                    <span style="font-size: 0.72rem; color: #94A3B8;">Automatic recovery links will be sent here upon live deployment.</span>
-                </div>
-            </div>
-
-            <div class="forgot-pass-footer">
-                <button type="button" class="btn-forgot-close" id="btnCancelForgotModal">Naiintindihan (Close)</button>
-            </div>
+            </form>
         </div>
     </div>
 
@@ -410,13 +452,13 @@
             }, 350);
         }
 
-        // Auto-dismiss the toast after 3.2 seconds
+        // Auto-dismiss the toast after 4 seconds
         document.addEventListener('DOMContentLoaded', () => {
             const toast = document.getElementById('authToast');
             if (toast) {
                 setTimeout(() => {
                     dismissToast(toast);
-                }, 3200);
+                }, 4000);
             }
         });
 
@@ -426,13 +468,15 @@
         const eyeIcon = document.getElementById('eyeIcon');
         let passwordVisible = false;
 
-        btnTogglePassword.addEventListener('click', () => {
-            passwordVisible = !passwordVisible;
-            passwordInput.type = passwordVisible ? 'text' : 'password';
-            eyeIcon.innerHTML = passwordVisible
-                ? '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />'
-                : '<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />';
-        });
+        if (btnTogglePassword && passwordInput && eyeIcon) {
+            btnTogglePassword.addEventListener('click', () => {
+                passwordVisible = !passwordVisible;
+                passwordInput.type = passwordVisible ? 'text' : 'password';
+                eyeIcon.innerHTML = passwordVisible
+                    ? '<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />'
+                    : '<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />';
+            });
+        }
 
         // Quick Autofill for Demo Testing
         function fillCredentials(login, pass) {
@@ -447,11 +491,20 @@
         const btnForgot = document.getElementById('btnForgotPassword');
         const btnCloseForgot = document.getElementById('btnCloseForgotModal');
         const btnCancelForgot = document.getElementById('btnCancelForgotModal');
+        const recoveryEmailInput = document.getElementById('recoveryEmail');
 
         if (btnForgot && forgotModal) {
             btnForgot.addEventListener('click', (e) => {
                 e.preventDefault();
+                // Pre-fill recovery email if user already typed something in login email field
+                const currentLoginVal = document.getElementById('email')?.value?.trim();
+                if (currentLoginVal && recoveryEmailInput && !recoveryEmailInput.value) {
+                    recoveryEmailInput.value = currentLoginVal;
+                }
                 forgotModal.style.display = 'flex';
+                setTimeout(() => {
+                    if (recoveryEmailInput) recoveryEmailInput.focus();
+                }, 100);
             });
         }
 
@@ -469,6 +522,44 @@
                 if (e.target === forgotModal) {
                     closeForgotModal();
                 }
+            });
+        }
+
+        // Login Form Submission with Loading Spinner
+        const authLoginForm = document.getElementById('authLoginForm');
+        const btnSubmit = document.getElementById('btnSubmit');
+
+        if (authLoginForm && btnSubmit) {
+            authLoginForm.addEventListener('submit', function(e) {
+                if (btnSubmit.disabled) {
+                    e.preventDefault();
+                    return;
+                }
+                btnSubmit.disabled = true;
+                btnSubmit.classList.add('btn-loading');
+                btnSubmit.innerHTML = `
+                    <div class="spinner-icon"></div>
+                    <span>SIGNING IN...</span>
+                `;
+            });
+        }
+
+        // Forgot Password Form Submission with Loading Spinner
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const btnForgotSubmit = document.getElementById('btnForgotSubmit');
+
+        if (forgotPasswordForm && btnForgotSubmit) {
+            forgotPasswordForm.addEventListener('submit', function(e) {
+                if (btnForgotSubmit.disabled) {
+                    e.preventDefault();
+                    return;
+                }
+                btnForgotSubmit.disabled = true;
+                btnForgotSubmit.classList.add('btn-loading');
+                btnForgotSubmit.innerHTML = `
+                    <div class="spinner-icon"></div>
+                    <span>SENDING LINK...</span>
+                `;
             });
         }
     </script>

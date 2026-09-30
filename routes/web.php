@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DirectoryController as AdminDirectoryController;
 use App\Http\Controllers\Admin\IssueController as AdminIssueController;
 use App\Http\Controllers\Admin\DemographyController as AdminDemographyController;
 use App\Http\Controllers\Admin\SurveyController as AdminSurveyController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Assistant\DashboardController as AssistantDashboardController;
 use App\Http\Controllers\Assistant\ElectoralDataController as AssistantElectoralDataController;
 use App\Http\Controllers\ProfileController;
@@ -19,6 +20,11 @@ Route::get('/', [AuthController::class, 'login'])->name('home');
 Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Password Reset Routes
+Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 // Admin routes
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->group(function () {
@@ -110,6 +116,16 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         Route::post('/delete/{id}', [AdminSurveyController::class, 'destroy'])->name('delete');
         Route::post('/period/delete/{id}', [AdminSurveyController::class, 'destroyPeriod'])->name('period.delete');
         Route::get('/export', [AdminSurveyController::class, 'exportCsv'])->name('export');
+    });
+
+    // User Accounts Module (Admin Only)
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [AdminUserController::class, 'index'])->name('index');
+        Route::get('/data', [AdminUserController::class, 'getData'])->name('data');
+        Route::post('/store', [AdminUserController::class, 'store'])->name('store');
+        Route::get('/record/{id}', [AdminUserController::class, 'show'])->name('show');
+        Route::post('/update/{id}', [AdminUserController::class, 'update'])->name('update');
+        Route::post('/delete/{id}', [AdminUserController::class, 'destroy'])->name('delete');
     });
 });
 
